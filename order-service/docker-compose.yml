@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  # Customer service Spring Boot API
+  customer-service-spring-api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    container_name: customer-service-spring-api
+    depends_on:
+      - customer-service-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://customer-service-db:5432/user
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - "8080:8080"
+
+  # Customer service PostgreSQL database
+  customer-service-db:
+    image: "postgres:13.1-alpine"
+    container_name: customer-service-db
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
