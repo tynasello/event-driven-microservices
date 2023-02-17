@@ -1,0 +1,11 @@
+FROM golang:1.20.0
+
+WORKDIR /usr/src/app
+
+EXPOSE 8081
+
+RUN go install github.com/cosmtrek/air@latest
+
+COPY . .
+RUN go mod tidy
+
