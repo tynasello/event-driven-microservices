@@ -5,12 +5,9 @@ import (
 	"example.com/inventory-service/src/internal/rest"
 )
 
-func init() {
+func main() {
 	config.LoadEnvVariables()
 	config.ConnectToDb()
 	config.RunDbMigrations()
-}
-
-func main() {
-	rest.Init()
+	rest.ServeHTTP()
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Init() {
+func ServeHTTP() {
 	r := gin.Default()
 
 	r.GET("/", func(c *gin.Context) {
