@@ -1,66 +1,62 @@
-### Services
+### Services:
 
-order-service
-
-- java
-- rest api
-
-payment-service
-
-- python
-
-user-service
-
-- typescript
-- contains endpoint for login, signup
-
-shipping-service
-
-- go
-
-inventory-service
-
-- java
-- rest api crud functionality for inventory items
-
----
-
-### Example Workflow
-
-- Create order via endpoint on order service. Customer service calls user service to authenticate user. Emits event if order requested.
-- On order requested, payment service attempts to reserve stock.
-- On stock reserved, payment service attempts to make transaction.
-- On empty stock, order service cancels order.
-- On transaction failed, order service cancels order, emits order cancelled event, inventory service unreserves inventory.
-- On transaction completed, order service accepts order request and emits event.
-- On order request accepted, shipping service looks for inventory. On inventory found, shipping service ships, order service completes order.
-- On inventory not found, order service cancels order, emits order cancelled event, payment service performs refund.
-
-### Isolated Behaviours:
+All services are managed through Docker and emit and receive events from a Kafka broker.
 
 order-service:
 
+- Endpoint to create an order, use user-service to login, save user username to order.
+- Emits order requested event (with order id, product name & quantity).
+
+- On inventory not found, cancel order, emit event.
+- On inventory reserved, update inventory reserved column value for order.
+
+- On transaction failed, cancel order, emit event (with order id, product name & quantity).
+- On transaction completed, accept order request and emit event.
+
+- On order shipped, complete order.
+
 payment-service:
 
-- On order request attempt to perform transaction.
-- On order cancelled see if a refund is in order.
+- On inventory found attempt to perform transaction.
+- Randomly accept or decline payment, emit transaction completed/failed event (with order id).
 
 user-service:
 
+- Endpoint to signup, login.
+
 shipping-service:
+
+- On order accepted, emit order shipped event (with order id).
 
 inventory-service:
 
----
+- Endpoint to create inventory items.
+- On order requested, look for inventory.
 
-### Entities
+  - If found emit inventory found (with order id), and reserve inventory. If not found, emit inventory not found event (with order id).
+
+- On order cancelled event, free any reserved inventory.
+
+### Domain Entities
 
 order-service:
 
-payment-service:
+- Order entity:
+  - order username
+  - status
+  - product name
+  - product quantity
+  - inventory reserved: bool
 
 user-service:
 
-shipping-service:
+- User:
+  - username
+  - password
 
 inventory-service:
+
+- Inventory:
+  - product name
+  - quantity
+  - quantity reserved
