@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.0"
 
 services:
   shipping-service:
@@ -6,12 +6,16 @@ services:
       context: .
     command: >
       sh -c "cargo test &&
-             cargo run"
-
+            cargo run"
     volumes:
       - .:/usr/src/app
-      - registry:/root/.cargo/registry # cache new crates when they are installed
+      - registry:/root/.cargo/registry
 
 volumes:
   registry:
     driver: local
+
+networks:
+  default:
+    external:
+      name: edms_network

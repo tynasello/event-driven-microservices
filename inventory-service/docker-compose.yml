@@ -1,18 +1,20 @@
 version: "3.8"
 
 services:
-  # Inventory service
+  # Inventory service (Go and Gin REST API)
   inventory-service:
     build: .
     env_file:
       - .env
     ports:
       - 8081:3000
+    depends_on:
+      - inventory-service-db
     volumes:
       - .:/usr/src/app
     command: air src/inventoryservice.go -b 0.0.0.0
 
-  # Inventory service PostgreSQL database
+  # Inventory service database (PostgreSQL)
   inventory-service-db:
     image: postgres:alpine
     environment:

@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  # Customer service
+  # Customer service (Java and Spring Boot REST API)
   customer-service:
     build:
       dockerfile: Dockerfile
@@ -17,7 +17,7 @@ services:
     ports:
       - "8080:8080"
 
-  # Customer service PostgreSQL database
+  # Customer service database (PostgreSQL )
   customer-service-db:
     image: "postgres:13.1-alpine"
     container_name: customer-service-db

@@ -20,8 +20,7 @@ func LoadEnvVariables() {
 var Db *gorm.DB
 
 func ConnectToDb() {
-	dsn := os.Getenv("GORM_DB_URL")
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(os.Getenv("DB_URI")), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}

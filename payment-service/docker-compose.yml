@@ -1,8 +1,8 @@
 version: "3.7"
 
 services:
-  # Payment service Flask REST API
-  payment_service_flask_api:
+  # Payment service (Python and Flask REST API)
+  payment_service:
     build:
       context: ./
     environment:
