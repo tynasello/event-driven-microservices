@@ -1,6 +1,6 @@
-package com.example.orderservice.repository;
+package com.example.orderservice.infra.repository;
 
-import com.example.orderservice.model.OrderModel;
+import com.example.orderservice.infra.persistedmodel.OrderModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

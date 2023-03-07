@@ -10,7 +10,7 @@ order-service:
 - On inventory not found, cancel order, emit event.
 - On inventory reserved, update inventory reserved column value for order.
 
-- On transaction failed, cancel order, emit event (with order id, product name & quantity).
+- On transaction failed, cancel order, emit event (with order id, inventory reserved bool, product name & quantity).
 - On transaction completed, accept order request and emit event.
 
 - On order shipped, complete order.
