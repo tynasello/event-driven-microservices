@@ -11,6 +11,6 @@ public class OrderServiceApplication {
 
     SpringApplication.run(OrderServiceApplication.class, args);
 
-    System.out.println("Order Service is running...");
+    System.out.println("Order service is running...");
   }
 }

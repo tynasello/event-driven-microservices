@@ -1,6 +1,7 @@
 package com.example.orderservice.infra.persistedmodel;
 
-import com.example.orderservice.domain.EOrderStatus;
+import com.example.orderservice.domain.entity.Order;
+import com.example.orderservice.domain.enums.EOrderStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,28 +11,28 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "orders")
 public class OrderModel {
-  @Id @GeneratedValue(strategy = GenerationType.AUTO) private Long id;
+  @Id @GeneratedValue(strategy = GenerationType.AUTO) private Integer id;
 
   private String ordererUsername;
   private String status;
   private String productName;
-  private String productQuantity;
-  private boolean inventoryReserved;
+  private Integer productQuantity;
+  private Boolean inventoryReserved;
 
   public OrderModel() {}
 
-  public OrderModel(String name, EOrderStatus status, String productName,
-                    String productQuantity, boolean inventoryReserved) {
-    this.ordererUsername = name;
-    this.status = status.name();
-    this.productName = productName;
-    this.productQuantity = productQuantity;
-    this.inventoryReserved = inventoryReserved;
+  public OrderModel(Order order) {
+    this.id = order.getId();
+    this.ordererUsername = order.getOrdererUsername();
+    this.status = order.getStatus().name();
+    this.productName = order.getProductName();
+    this.productQuantity = order.getProductQuantity();
+    this.inventoryReserved = order.getIsInventoryReserved();
   }
 
-  public Long getId() { return id; }
+  public Integer getId() { return id; }
 
-  public void setId(Long id) { this.id = id; }
+  public void setId(Integer id) { this.id = id; }
 
   public String getOrdererUsername() { return ordererUsername; }
 
@@ -39,7 +40,7 @@ public class OrderModel {
     this.ordererUsername = ordererUsername;
   }
 
-  public EOrderStatus getStatus() { return EOrderStatus.valueOf(status); }
+  public String getStatus() { return status; }
 
   public void setStatus(EOrderStatus status) { this.status = status.name(); }
 
@@ -49,15 +50,15 @@ public class OrderModel {
     this.productName = productName;
   }
 
-  public String getProductQuantity() { return productQuantity; }
+  public Integer getProductQuantity() { return productQuantity; }
 
-  public void setProductQuantity(String productQuantity) {
+  public void setProductQuantity(Integer productQuantity) {
     this.productQuantity = productQuantity;
   }
 
-  public boolean isInventoryReserved() { return inventoryReserved; }
+  public Boolean getIsInventoryReserved() { return inventoryReserved; }
 
-  public void setInventoryReserved(boolean inventoryReserved) {
+  public void setInventoryReserved(Boolean inventoryReserved) {
     this.inventoryReserved = inventoryReserved;
   }
 }

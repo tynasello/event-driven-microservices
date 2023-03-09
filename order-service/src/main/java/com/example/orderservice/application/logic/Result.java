@@ -1,13 +1,15 @@
 package com.example.orderservice.application.logic;
 
+import com.example.orderservice.domain.enums.ECustomErrorCode;
+
 public class Result<T> {
   public final boolean isSuccess;
   public final boolean isFailure;
-  private final Error _errorCode;
+  private final ECustomErrorCode _errorCode;
   private final String _errorMessage;
   private final T value;
 
-  public Result(boolean isSuccess, T value, Error errorCode,
+  public Result(boolean isSuccess, T value, ECustomErrorCode errorCode,
                 String errorMessage) {
     if (isSuccess && errorCode != null) {
       throw new IllegalArgumentException("InvalidOperation: A result cannot be "
@@ -24,20 +26,29 @@ public class Result<T> {
     this._errorMessage = errorMessage;
   }
 
+  public String toString() {
+    if (this.isSuccess) {
+      return this.value.toString();
+    } else {
+      return this._errorCode + " - " + this._errorMessage;
+    }
+  }
+
   public static <T> Result<T> ok(T value) {
     return new Result<T>(true, value, null, null);
   }
 
-  public static <T> Result<T> fail(Error errorCode, String errorMessage) {
+  public static <T> Result<T> fail(ECustomErrorCode errorCode,
+                                   String errorMessage) {
     return new Result<T>(false, null, errorCode, errorMessage);
   }
 
-  public Error getErrorCode() {
+  public ECustomErrorCode getErrorCode() {
     if (this.isSuccess) {
       throw new IllegalStateException("InvalidOperation: Can't get the error "
                                       + "code from a successful result");
     }
-    return _errorCode;
+    return this._errorCode;
   }
 
   public String getErrorMessage() {
@@ -45,7 +56,7 @@ public class Result<T> {
       throw new IllegalStateException("InvalidOperation: Can't get the error "
                                       + "message from a successful result");
     }
-    return _errorMessage;
+    return this._errorMessage;
   }
 
   public T getValue() {
@@ -53,6 +64,6 @@ public class Result<T> {
       throw new IllegalStateException("InvalidOperation: Can't get the value "
                                       + "from a failed result");
     }
-    return value;
+    return this.value;
   }
 }

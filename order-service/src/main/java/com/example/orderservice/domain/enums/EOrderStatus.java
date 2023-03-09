@@ -1,8 +1,8 @@
-package com.example.orderservice.domain;
+package com.example.orderservice.domain.enums;
 
 public enum EOrderStatus {
   REQUESTED,
   APPROVED,
-  CANCELED,
+  CANCELLED,
   COMPLETED,
 }

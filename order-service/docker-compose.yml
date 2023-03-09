@@ -3,19 +3,21 @@ version: "3.8"
 services:
   # Order service (Java and Spring Boot REST API)
   order-service:
-    build:
-      dockerfile: Dockerfile
-      context: .
+    image: maven:3.8-eclipse-temurin-19-alpine
     container_name: order-service-spring-api
     depends_on:
       - order-service-db
+    working_dir: /usr/src
+    command: mvn spring-boot:run
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://order-service-db:5432/order?createDatabaseIfNotExist=true
       - SPRING_DATASOURCE_USERNAME=order
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     ports:
-      - "8080:8080"
+      - 8080:8080
+    volumes:
+      - .:/usr/src:rw
 
   # Order service database (PostgreSQL)
   order-service-db:
