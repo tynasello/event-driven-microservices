@@ -16,6 +16,7 @@ func ServeHTTP(db *gorm.DB, restMiddleware interfaces.IRestMiddleware, hashServi
 	})
 	r.POST("/signup", func(c *gin.Context) { SignupUser(c, db, hashService, authTokenService) })
 	r.GET("/login", func(c *gin.Context) { LoginUser(c, db, hashService, authTokenService) })
+	r.GET("/authenticate-user", restMiddleware.AccessTokenMiddleware(authTokenService), func(c *gin.Context) { AuthenticateUser(c, db, authTokenService) })
 	r.GET("/get-user", restMiddleware.AccessTokenMiddleware(authTokenService), func(c *gin.Context) { GetUser(c, db, authTokenService) })
 
 	r.Run()

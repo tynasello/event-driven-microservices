@@ -9,7 +9,8 @@ services:
     ports:
       - 8082:3000
     depends_on:
-      - user-service-db
+      user-service-db:
+        condition: service_healthy
     volumes:
       - .:/usr/src/app
     command: air src/main.go -b 0.0.0.0
@@ -27,6 +28,17 @@ services:
       - "5434:3306"
     volumes:
       - user-service-postgres-db-volume:/var/lib/mysql
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
 
 volumes:
   user-service-postgres-db-volume:
+
+networks:
+  default:
+    external:
+      name: edms_network

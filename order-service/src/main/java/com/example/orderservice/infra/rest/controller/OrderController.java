@@ -7,12 +7,17 @@ import com.example.orderservice.application.usecase.UpdateOrderUseCase;
 import com.example.orderservice.domain.entity.Order;
 import com.example.orderservice.domain.enums.ECustomErrorCode;
 import com.example.orderservice.domain.enums.EOrderStatus;
+import com.example.orderservice.domain.event.OrderRequestedEvent;
 import com.example.orderservice.infra.rest.dto.CreateOrderRequestDto;
 import com.example.orderservice.infra.rest.dto.GetOrderRequestDto;
 import com.example.orderservice.infra.rest.dto.OrderResponseDto;
 import com.example.orderservice.infra.rest.dto.UpdateOrderRequestDto;
+import com.example.orderservice.infra.rest.webclient.UserServiceWebClient;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,14 +30,22 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping()
 public class OrderController {
+
+  @Autowired private KafkaTemplate<String, String> kafkaTemplate;
   @Autowired private CreateOrderUseCase createOrderUseCase;
   @Autowired private GetOrderUseCase getOrderUseCase;
   @Autowired private UpdateOrderUseCase updateOrderUseCase;
+  @Autowired private UserServiceWebClient userServiceWebClient;
+  private Gson gson = new Gson();
 
   public static void HandleFailedResult(Result result) {
     switch (result.getErrorCode()) {
     case USER_INPUT_ERROR:
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                        result.toString());
+
+    case AUTHENTICATION_ERROR:
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                                         result.toString());
     default:
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -70,21 +83,36 @@ public class OrderController {
 
   @PostMapping("create-order")
   @ResponseStatus(code = HttpStatus.CREATED)
-  public OrderResponseDto createOrder(@RequestBody CreateOrderRequestDto dto) {
+  public OrderResponseDto
+  createOrder(@CookieValue("access-token") String accessToken,
+              @RequestBody CreateOrderRequestDto dto) {
+
+    Result<String> usernameResult =
+        userServiceWebClient.getUserById(accessToken);
+    if (usernameResult.isFailure) {
+      OrderController.HandleFailedResult(usernameResult);
+    }
+    String username = usernameResult.getValue();
+
     Result<CreateOrderRequestDto> isDtoValidResult =
         CreateOrderRequestDto.isValid(dto);
     if (isDtoValidResult.isFailure) {
       OrderController.HandleFailedResult(isDtoValidResult);
     }
     CreateOrderRequestDto validDto = isDtoValidResult.getValue();
-    Order order = new Order(null, validDto.getOrdererUsername(),
-                            EOrderStatus.REQUESTED, validDto.getProductName(),
+    Order order = new Order(null, username, EOrderStatus.REQUESTED,
+                            validDto.getProductName(),
                             validDto.getProductQuantity(), false);
     Result<Order> createdOrderResult = createOrderUseCase.createOrder(order);
     if (createdOrderResult.isFailure) {
       OrderController.HandleFailedResult(createdOrderResult);
     }
     Order createdOrder = createdOrderResult.getValue();
+
+    OrderRequestedEvent orderRequestedEvent =
+        new OrderRequestedEvent(createdOrder.getId());
+
+    kafkaTemplate.send("edms", gson.toJson(orderRequestedEvent));
 
     OrderResponseDto responseDto = new OrderResponseDto(createdOrder);
     return responseDto;

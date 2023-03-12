@@ -113,3 +113,9 @@ func GetUser(c *gin.Context, db *gorm.DB, authTokenService interfaces.IAuthToken
 
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
+
+func AuthenticateUser(c *gin.Context, db *gorm.DB, authTokenService interfaces.IAuthTokenService) {
+	username := c.GetString("username")
+
+	c.JSON(http.StatusOK, gin.H{"username": username})
+}
