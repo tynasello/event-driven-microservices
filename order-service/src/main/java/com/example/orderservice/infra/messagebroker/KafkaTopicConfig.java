@@ -22,7 +22,7 @@ public class KafkaTopicConfig {
   }
 
   @Bean
-  public NewTopic topic1() {
+  public NewTopic edmsTopic() {
     return new NewTopic("edms", 1, (short)1);
   }
 }

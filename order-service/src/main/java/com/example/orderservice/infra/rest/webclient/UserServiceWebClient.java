@@ -1,5 +1,6 @@
 package com.example.orderservice.infra.rest.webclient;
 
+import com.example.orderservice.application.interfaces.IUserServiceWebClient;
 import com.example.orderservice.application.logic.Result;
 import com.example.orderservice.domain.enums.ECustomErrorCode;
 import com.example.orderservice.infra.rest.dto.GetUserFromUserServiceResponseDto;
@@ -11,10 +12,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class UserServiceWebClient {
+public class UserServiceWebClient implements IUserServiceWebClient {
   static String UserServiceUrl = "http://user-service:3000";
 
-  public Result<String> getUserById(String accessToken) {
+  public Result<String> getUsernameById(String accessToken) {
 
     RestTemplate restTemplate = new RestTemplate();
 

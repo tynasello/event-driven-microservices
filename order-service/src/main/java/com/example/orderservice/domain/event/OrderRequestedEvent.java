@@ -1,13 +1,25 @@
 package com.example.orderservice.domain.event;
 
 public class OrderRequestedEvent {
-  private Integer id;
+  private Integer orderId;
+  private String productName;
+  private Integer productQuantity;
 
-  public OrderRequestedEvent(Integer id) { this.id = id; }
+  public OrderRequestedEvent(Integer orderId, String productName,
+                             Integer productQuantity) {
+    this.orderId = orderId;
+    this.productName = productName;
+    this.productQuantity = productQuantity;
+  }
 
-  public String toString() { return "id=" + this.getId(); }
+  public String toString() {
+    return "OrderRequestedEvent: " + orderId + " " + productName + " " +
+        productQuantity;
+  }
 
-  public Integer getId() { return id; }
+  public Integer getOrderId() { return orderId; }
 
-  public void setId(Integer id) { this.id = id; }
+  public String getProductName() { return productName; }
+
+  public Integer getProductQuantity() { return productQuantity; }
 }

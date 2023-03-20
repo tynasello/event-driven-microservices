@@ -1,5 +1,8 @@
 package com.example.orderservice.infra.rest.controller;
 
+import com.example.orderservice.application.interfaces.IJsonService;
+import com.example.orderservice.application.interfaces.IMessageBrokerService;
+import com.example.orderservice.application.interfaces.IUserServiceWebClient;
 import com.example.orderservice.application.logic.Result;
 import com.example.orderservice.application.usecase.CreateOrderUseCase;
 import com.example.orderservice.application.usecase.GetOrderUseCase;
@@ -12,11 +15,8 @@ import com.example.orderservice.infra.rest.dto.CreateOrderRequestDto;
 import com.example.orderservice.infra.rest.dto.GetOrderRequestDto;
 import com.example.orderservice.infra.rest.dto.OrderResponseDto;
 import com.example.orderservice.infra.rest.dto.UpdateOrderRequestDto;
-import com.example.orderservice.infra.rest.webclient.UserServiceWebClient;
-import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,12 +31,12 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping()
 public class OrderController {
 
-  @Autowired private KafkaTemplate<String, String> kafkaTemplate;
+  @Autowired private IMessageBrokerService messageBrokerService;
   @Autowired private CreateOrderUseCase createOrderUseCase;
   @Autowired private GetOrderUseCase getOrderUseCase;
   @Autowired private UpdateOrderUseCase updateOrderUseCase;
-  @Autowired private UserServiceWebClient userServiceWebClient;
-  private Gson gson = new Gson();
+  @Autowired private IUserServiceWebClient userServiceWebClient;
+  @Autowired private IJsonService jsonService;
 
   public static void HandleFailedResult(Result result) {
     switch (result.getErrorCode()) {
@@ -88,7 +88,7 @@ public class OrderController {
               @RequestBody CreateOrderRequestDto dto) {
 
     Result<String> usernameResult =
-        userServiceWebClient.getUserById(accessToken);
+        userServiceWebClient.getUsernameById(accessToken);
     if (usernameResult.isFailure) {
       OrderController.HandleFailedResult(usernameResult);
     }
@@ -109,10 +109,11 @@ public class OrderController {
     }
     Order createdOrder = createdOrderResult.getValue();
 
-    OrderRequestedEvent orderRequestedEvent =
-        new OrderRequestedEvent(createdOrder.getId());
+    OrderRequestedEvent orderRequestedEvent = new OrderRequestedEvent(
+        createdOrder.getId(), createdOrder.getProductName(),
+        createdOrder.getProductQuantity());
 
-    kafkaTemplate.send("edms", gson.toJson(orderRequestedEvent));
+    messageBrokerService.send("edms", jsonService.toJson(orderRequestedEvent));
 
     OrderResponseDto responseDto = new OrderResponseDto(createdOrder);
     return responseDto;
