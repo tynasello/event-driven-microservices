@@ -19,7 +19,7 @@ public class UpdateOrderUseCase {
       return Result.fail(ECustomErrorCode.USER_INPUT_ERROR,
                          "Order does not exits");
     }
-    Order existingOrder = existingOrderResult.getValue();
+    Order existingOrder = existingOrderResult.get_value();
     if (status != null) {
       existingOrder.setStatus(status);
     }

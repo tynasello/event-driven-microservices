@@ -16,7 +16,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 public class MessageBrokerService implements IMessageBrokerService {
 
   @Autowired UpdateOrderUseCase updateOrderUseCase;
-  @Autowired private IMessageBrokerService messageBrokerService;
   @Autowired private IJsonService jsonService;
   @Autowired private KafkaTemplate<String, String> kafkaTemplate;
 
@@ -61,8 +60,7 @@ public class MessageBrokerService implements IMessageBrokerService {
     if (updatedOrderReuslt.isFailure) {
       return;
     }
-    messageBrokerService.send("edms",
-                              EOrderEventType.ORDER_COMPLETED.toString());
+    this.send("edms", EOrderEventType.ORDER_COMPLETED.toString());
   }
 
   public void inventoryNotFound() {
@@ -74,7 +72,7 @@ public class MessageBrokerService implements IMessageBrokerService {
     OrderCancelledEvent orderCancelledEvent = new OrderCancelledEvent(
         event.getOrderId(), false, event.getProductName(),
         event.getProductQuantity());
-    messageBrokerService.send("edms", jsonService.toJson(orderCancelledEvent));
+    this.send("edms", jsonService.toJson(orderCancelledEvent));
   }
 
   public void inventoryReserved() {
@@ -89,7 +87,7 @@ public class MessageBrokerService implements IMessageBrokerService {
     }
     OrderAcceptedEvent orderAcceptedEvent =
         new OrderAcceptedEvent(event.getOrderId());
-    messageBrokerService.send("edms", jsonService.toJson(orderAcceptedEvent));
+    this.send("edms", jsonService.toJson(orderAcceptedEvent));
   }
 
   public void transactionFailed() {
@@ -102,6 +100,6 @@ public class MessageBrokerService implements IMessageBrokerService {
     OrderCancelledEvent orderCancelledEvent = new OrderCancelledEvent(
         event.getOrderId(), event.getIsInventoryReserved(),
         event.getProductName(), event.getProductQuantity());
-    messageBrokerService.send("edms", jsonService.toJson(orderCancelledEvent));
+    this.send("edms", jsonService.toJson(orderCancelledEvent));
   }
 }

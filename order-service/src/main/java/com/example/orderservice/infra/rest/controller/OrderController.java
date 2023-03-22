@@ -68,14 +68,14 @@ public class OrderController {
     if (isDtoValidResult.isFailure) {
       OrderController.HandleFailedResult(isDtoValidResult);
     }
-    GetOrderRequestDto validDto = isDtoValidResult.getValue();
+    GetOrderRequestDto validDto = isDtoValidResult.get_value();
 
     Result<Order> orderResult = getOrderUseCase.getOrderById(validDto.getId());
 
     if (orderResult.isFailure) {
       OrderController.HandleFailedResult(orderResult);
     }
-    Order order = orderResult.getValue();
+    Order order = orderResult.get_value();
 
     OrderResponseDto responseDto = new OrderResponseDto(order);
     return responseDto;
@@ -92,14 +92,14 @@ public class OrderController {
     if (usernameResult.isFailure) {
       OrderController.HandleFailedResult(usernameResult);
     }
-    String username = usernameResult.getValue();
+    String username = usernameResult.get_value();
 
     Result<CreateOrderRequestDto> isDtoValidResult =
         CreateOrderRequestDto.isValid(dto);
     if (isDtoValidResult.isFailure) {
       OrderController.HandleFailedResult(isDtoValidResult);
     }
-    CreateOrderRequestDto validDto = isDtoValidResult.getValue();
+    CreateOrderRequestDto validDto = isDtoValidResult.get_value();
     Order order = new Order(null, username, EOrderStatus.REQUESTED,
                             validDto.getProductName(),
                             validDto.getProductQuantity(), false);
@@ -107,7 +107,7 @@ public class OrderController {
     if (createdOrderResult.isFailure) {
       OrderController.HandleFailedResult(createdOrderResult);
     }
-    Order createdOrder = createdOrderResult.getValue();
+    Order createdOrder = createdOrderResult.get_value();
 
     OrderRequestedEvent orderRequestedEvent = new OrderRequestedEvent(
         createdOrder.getId(), createdOrder.getProductName(),
@@ -128,7 +128,7 @@ public class OrderController {
     if (isDtoValidResult.isFailure) {
       OrderController.HandleFailedResult(isDtoValidResult);
     }
-    UpdateOrderRequestDto validDto = isDtoValidResult.getValue();
+    UpdateOrderRequestDto validDto = isDtoValidResult.get_value();
 
     Result<Order> updatedOrder = updateOrderUseCase.updateOrder(
         validDto.getId(),
@@ -139,7 +139,7 @@ public class OrderController {
     if (updatedOrder.isFailure) {
       OrderController.HandleFailedResult(updatedOrder);
     }
-    Order updatedOrderValue = updatedOrder.getValue();
+    Order updatedOrderValue = updatedOrder.get_value();
 
     OrderResponseDto responseDto = new OrderResponseDto(updatedOrderValue);
     return responseDto;

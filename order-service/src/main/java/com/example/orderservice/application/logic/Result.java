@@ -7,7 +7,7 @@ public class Result<T> {
   public final boolean isFailure;
   private final ECustomErrorCode _errorCode;
   private final String _errorMessage;
-  private final T value;
+  private final T _value;
 
   public Result(boolean isSuccess, T value, ECustomErrorCode errorCode,
                 String errorMessage) {
@@ -21,14 +21,14 @@ public class Result<T> {
     }
     this.isSuccess = isSuccess;
     this.isFailure = !isSuccess;
-    this.value = value;
+    this._value = value;
     this._errorCode = errorCode;
     this._errorMessage = errorMessage;
   }
 
   public String toString() {
     if (this.isSuccess) {
-      return this.value.toString();
+      return this._value.toString();
     } else {
       return this._errorCode + " - " + this._errorMessage;
     }
@@ -59,11 +59,11 @@ public class Result<T> {
     return this._errorMessage;
   }
 
-  public T getValue() {
+  public T get_value() {
     if (this.isFailure) {
       throw new IllegalStateException("InvalidOperation: Can't get the value "
                                       + "from a failed result");
     }
-    return this.value;
+    return this._value;
   }
 }

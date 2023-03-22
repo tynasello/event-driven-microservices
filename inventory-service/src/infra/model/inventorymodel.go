@@ -1,14 +1,15 @@
-package models
+package model
 
 import "gorm.io/gorm"
 
-type InventoryItem struct {
+type InventoryModel struct {
 	gorm.Model
+	Id               int
 	Label            string
 	QuantityInStock  int
 	QuantityReserved int
 }
 
-func (InventoryItem) TableName() string {
+func (InventoryModel) TableName() string {
 	return "inventory"
 }

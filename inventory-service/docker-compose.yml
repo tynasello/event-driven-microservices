@@ -12,7 +12,7 @@ services:
       - inventory-service-db
     volumes:
       - .:/usr/src/app
-    command: air src/inventoryservice.go -b 0.0.0.0
+    command: air src/main.go -b 0.0.0.0
 
   # Inventory service database (PostgreSQL)
   inventory-service-db:
