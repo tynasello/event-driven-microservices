@@ -16,14 +16,14 @@ func FailedResult[T any](errorMessage string) *Result[T] {
 	return &Result[T]{false, true, t, errorMessage}
 }
 
-func (r *Result[T]) GetValue() T {
+func (r Result[T]) GetValue() T {
 	if r.IsFailure {
 		panic("Cannot get value from a failed result")
 	}
 	return r._value
 }
 
-func (r *Result[T]) GetErrorMessage() string {
+func (r Result[T]) GetErrorMessage() string {
 	if r.IsSuccess {
 		panic("Cannot get error message from a successful result")
 	}

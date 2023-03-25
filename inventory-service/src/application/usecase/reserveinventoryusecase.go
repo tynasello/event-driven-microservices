@@ -13,16 +13,16 @@ type ReserveInventoryUseCase struct {
 	MessageBrokerProducerService interfaces.IMessageBrokerProducerService
 }
 
-func (o ReserveInventoryUseCase) Execute(orderId int, inventoryLabel string, inventoryQauntity int) *logic.Result[bool] {
+func (u ReserveInventoryUseCase) Execute(orderId int, inventoryLabel string, inventoryQauntity int) *logic.Result[bool] {
 	// see if inventory exists and can be reserved
-	inventoryExistsResult := o.InventoryRepository.GetByLabel(inventoryLabel)
+	inventoryExistsResult := u.InventoryRepository.GetByLabel(inventoryLabel)
 	if inventoryExistsResult.IsFailure || inventoryExistsResult.GetValue().QuantityReserved+inventoryQauntity > inventoryExistsResult.GetValue().QuantityInStock {
 		inventoryNotReservedEvent := event.NewInventoryNotReservedEvent(orderId)
 		inventoryNotReservedEventJson, err := json.Marshal(inventoryNotReservedEvent)
 		if err != nil {
 			return logic.FailedResult[bool](err.Error())
 		}
-		o.MessageBrokerProducerService.PublishMessage(string(inventoryNotReservedEventJson))
+		u.MessageBrokerProducerService.PublishMessage(string(inventoryNotReservedEventJson))
 		return logic.FailedResult[bool]("Inventory not found")
 	}
 
@@ -32,7 +32,7 @@ func (o ReserveInventoryUseCase) Execute(orderId int, inventoryLabel string, inv
 
 	existingInventory.QuantityReserved += inventoryQauntity
 
-	updatedInventoryResult := o.InventoryRepository.Update(existingInventory)
+	updatedInventoryResult := u.InventoryRepository.Update(existingInventory)
 	if updatedInventoryResult.IsFailure {
 		return logic.FailedResult[bool]("Failed to update inventory")
 	}
@@ -42,7 +42,7 @@ func (o ReserveInventoryUseCase) Execute(orderId int, inventoryLabel string, inv
 	if err != nil {
 		return logic.FailedResult[bool](err.Error())
 	}
-	o.MessageBrokerProducerService.PublishMessage(string(inventoryReservedEventJson))
+	u.MessageBrokerProducerService.PublishMessage(string(inventoryReservedEventJson))
 
 	return logic.OkResult(true)
 }

@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 type InventoryModel struct {
 	gorm.Model
-	Id               int
-	Label            string
+	Id               int    `gorm:"primaryKey"`
+	Label            string `gorm:"unique"`
 	QuantityInStock  int
 	QuantityReserved int
 }

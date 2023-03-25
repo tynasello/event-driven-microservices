@@ -11,7 +11,7 @@ type InventoryRepository struct {
 	Db *gorm.DB
 }
 
-func (r *InventoryRepository) Create(inventory entity.Inventory) *logic.Result[entity.Inventory] {
+func (r InventoryRepository) Create(inventory entity.Inventory) *logic.Result[entity.Inventory] {
 	inventoryModel := model.InventoryModel{
 		Label:            inventory.Label,
 		QuantityInStock:  inventory.QuantityInStock,
@@ -27,7 +27,7 @@ func (r *InventoryRepository) Create(inventory entity.Inventory) *logic.Result[e
 	return logic.OkResult(createdInventory)
 }
 
-func (r *InventoryRepository) GetById(id int) *logic.Result[entity.Inventory] {
+func (r InventoryRepository) GetById(id int) *logic.Result[entity.Inventory] {
 	var inventoryModel model.InventoryModel
 
 	existingInventoryResult := r.Db.First(&inventoryModel, id)
@@ -40,7 +40,7 @@ func (r *InventoryRepository) GetById(id int) *logic.Result[entity.Inventory] {
 	return logic.OkResult(existingInventory)
 }
 
-func (r *InventoryRepository) GetByLabel(label string) *logic.Result[entity.Inventory] {
+func (r InventoryRepository) GetByLabel(label string) *logic.Result[entity.Inventory] {
 	var inventoryModel model.InventoryModel
 
 	existingInventoryResult := r.Db.Model(model.InventoryModel{Label: label}).First(&inventoryModel)
@@ -53,7 +53,7 @@ func (r *InventoryRepository) GetByLabel(label string) *logic.Result[entity.Inve
 	return logic.OkResult(existingInventory)
 }
 
-func (r *InventoryRepository) Update(inventory entity.Inventory) *logic.Result[entity.Inventory] {
+func (r InventoryRepository) Update(inventory entity.Inventory) *logic.Result[entity.Inventory] {
 	var inventoryModel model.InventoryModel
 
 	existingInventoryResult := r.Db.First(&inventoryModel, inventory.Id)

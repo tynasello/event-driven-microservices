@@ -10,8 +10,8 @@ type CreateInventoryUseCase struct {
 	InventoryRepository interfaces.IInventoryRepository
 }
 
-func (c *CreateInventoryUseCase) Execute(inventory entity.Inventory) *logic.Result[entity.Inventory] {
-	createdInventoryResult := c.InventoryRepository.Create(inventory)
+func (u CreateInventoryUseCase) Execute(inventory entity.Inventory) *logic.Result[entity.Inventory] {
+	createdInventoryResult := u.InventoryRepository.Create(inventory)
 	if createdInventoryResult.IsFailure {
 		return createdInventoryResult
 	}
