@@ -3,10 +3,11 @@ package event
 import "example.com/inventory-service/src/domain/enum"
 
 type OrderEvent struct {
-	EventType       string
-	OrderId         int
-	ProductName     string
-	ProductQuantity int
+	EventType           string `json:"eventType"`
+	OrderId             int    `json:"orderId"`
+	InventoryLabel      string `json:"inventoryLabel"`
+	InventoryQauntity   int    `json:"inventoryQauntity"`
+	IsInventoryReserved bool   `json:"isInventoryReserved"`
 }
 
 func (o OrderEvent) IsValidToConsume() bool {

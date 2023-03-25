@@ -40,6 +40,19 @@ func (r *InventoryRepository) GetById(id int) *logic.Result[entity.Inventory] {
 	return logic.OkResult(existingInventory)
 }
 
+func (r *InventoryRepository) GetByLabel(label string) *logic.Result[entity.Inventory] {
+	var inventoryModel model.InventoryModel
+
+	existingInventoryResult := r.Db.Model(model.InventoryModel{Label: label}).First(&inventoryModel)
+
+	if existingInventoryResult.Error != nil {
+		return logic.FailedResult[entity.Inventory]("Failed to get inventory item")
+	}
+
+	existingInventory := entity.Inventory{Id: inventoryModel.Id, Label: inventoryModel.Label, QuantityInStock: inventoryModel.QuantityInStock, QuantityReserved: inventoryModel.QuantityReserved}
+	return logic.OkResult(existingInventory)
+}
+
 func (r *InventoryRepository) Update(inventory entity.Inventory) *logic.Result[entity.Inventory] {
 	var inventoryModel model.InventoryModel
 

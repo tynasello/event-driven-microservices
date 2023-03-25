@@ -13,8 +13,8 @@ type KafkaBroker struct {
 	Consumer *kafka.Consumer
 }
 
-func NewKafkaBroker() *KafkaBroker {
-	return &KafkaBroker{
+func NewKafkaBroker() KafkaBroker {
+	return KafkaBroker{
 		Producer: ConfigKafkaProducer(),
 		Consumer: ConfigKafkaConsumer(),
 	}
@@ -58,7 +58,7 @@ func (k KafkaBroker) SendToKafka(message string) {
 	fmt.Println("Message sent to kafka")
 }
 
-func (k KafkaBroker) ConsumeFromKafka(messageBrokerService interfaces.IMessageBrokerService) {
+func (k KafkaBroker) ConsumeFromKafka(messageBrokerService interfaces.IMessageBrokerConsumerService) {
 	topics := []string{"edms"}
 	err := k.Consumer.SubscribeTopics(topics, nil)
 	run := err == nil

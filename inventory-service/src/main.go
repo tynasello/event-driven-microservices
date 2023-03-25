@@ -2,6 +2,7 @@ package main
 
 import (
 	"example.com/inventory-service/src/application/usecase"
+	"example.com/inventory-service/src/infra/messagebroker"
 	"example.com/inventory-service/src/infra/repository"
 	"example.com/inventory-service/src/infra/rest"
 	"example.com/inventory-service/src/infra/rest/controllers"
@@ -15,15 +16,23 @@ func main() {
 		panic("Error loading .env file")
 	}
 
-	var dbService service.DbService
-	dbService.ConnectToDb()
+	dbService := service.NewDbService()
 	dbService.RunDbMigrations()
 
 	// dependency injection
+	kafkaBroker := messagebroker.NewKafkaBroker()
+	messageBrokerProducerService := service.MessageBrokerProducerService{KafkaBroker: kafkaBroker}
+
 	inventoryRepository := repository.InventoryRepository{Db: dbService.Db}
 	createInventoryUseCase := usecase.CreateInventoryUseCase{InventoryRepository: &inventoryRepository}
+	reserveInventoryUseCase := usecase.ReserveInventoryUseCase{InventoryRepository: &inventoryRepository, MessageBrokerProducerService: &messageBrokerProducerService}
+	orderCancelledUseCase := usecase.OrderCancelledUseCase{InventoryRepository: &inventoryRepository}
+
+	messageBrokerConsumerService := service.MessageBrokerConsumerService{KafkaBroker: kafkaBroker, ReserveInventoryUseCase: reserveInventoryUseCase, OrderCancelledUseCase: orderCancelledUseCase}
+
 	inventoryController := controllers.InventoryController{CreateInventoryUseCase: createInventoryUseCase}
 	httpServer := rest.HttpServer{InventoryController: inventoryController}
 
+	go messageBrokerConsumerService.StartConsuming()
 	httpServer.ServeHTTP()
 }
