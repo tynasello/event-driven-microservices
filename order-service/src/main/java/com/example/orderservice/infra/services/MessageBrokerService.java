@@ -36,7 +36,7 @@ public class MessageBrokerService implements IMessageBrokerService {
     case ORDER_SHIPPED:
       orderShipped();
       break;
-    case INVENTORY_NOT_FOUND:
+    case INVENTORY_NOT_RESERVED:
       inventoryNotFound();
       break;
     case INVENTORY_RESERVED:
@@ -70,8 +70,8 @@ public class MessageBrokerService implements IMessageBrokerService {
       return;
     }
     OrderCancelledEvent orderCancelledEvent = new OrderCancelledEvent(
-        event.getOrderId(), false, event.getProductName(),
-        event.getProductQuantity());
+        event.getOrderId(), false, event.getInventoryLabel(),
+        event.getInventoryQuantity());
     this.send("edms", jsonService.toJson(orderCancelledEvent));
   }
 
@@ -99,7 +99,7 @@ public class MessageBrokerService implements IMessageBrokerService {
     }
     OrderCancelledEvent orderCancelledEvent = new OrderCancelledEvent(
         event.getOrderId(), event.getIsInventoryReserved(),
-        event.getProductName(), event.getProductQuantity());
+        event.getInventoryLabel(), event.getInventoryQuantity());
     this.send("edms", jsonService.toJson(orderCancelledEvent));
   }
 }

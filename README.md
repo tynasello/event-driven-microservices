@@ -37,6 +37,18 @@ inventory-service:
 
 - On order cancelled event, free any reserved inventory.
 
+### Events
+
+- ORDER_REQUESTED
+- ORDER_CANCELLED
+- ORDER_SHIPPED
+- ORDER_COMPLETED
+- ORDER_ACCEPTED
+- INVENTORY_NOT_RESERVED
+- INVENTORY_RESERVED
+- TRANSACTION_COMPLETED
+- TRANSACTION_FAILED
+
 ### Domain Entities
 
 order-service:

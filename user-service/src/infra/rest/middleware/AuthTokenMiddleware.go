@@ -7,9 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type RestMiddleware struct{}
+type RestMiddleware struct {
+	AuthTokenService interfaces.IAuthTokenService
+}
 
-func (r RestMiddleware) AccessTokenMiddleware(authTokenService interfaces.IAuthTokenService) gin.HandlerFunc {
+func (r RestMiddleware) AccessTokenMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accessToken, err := c.Cookie("access-token")
 		if err != nil || accessToken == "" {
@@ -19,7 +21,7 @@ func (r RestMiddleware) AccessTokenMiddleware(authTokenService interfaces.IAuthT
 			c.Abort()
 			return
 		}
-		username, err := authTokenService.ValidateToken(accessToken)
+		username, err := r.AuthTokenService.ValidateToken(accessToken)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"message": err.Error(),

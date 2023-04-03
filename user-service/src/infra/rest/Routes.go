@@ -1,12 +1,17 @@
 package rest
 
 import (
-	"example.com/user-service/src/application/interfaces"
+	"example.com/user-service/src/infra/rest/controller"
+	"example.com/user-service/src/infra/rest/middleware"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func ServeHTTP(db *gorm.DB, restMiddleware interfaces.IRestMiddleware, hashService interfaces.IHashService, authTokenService interfaces.IAuthTokenService) {
+type HttpServer struct {
+	UserController controller.UserController
+	RestMiddleware middleware.RestMiddleware
+}
+
+func (h HttpServer) ServeHTTP() {
 	r := gin.Default()
 
 	r.GET("/", func(c *gin.Context) {
@@ -14,10 +19,10 @@ func ServeHTTP(db *gorm.DB, restMiddleware interfaces.IRestMiddleware, hashServi
 			"message": "pong",
 		})
 	})
-	r.POST("/signup", func(c *gin.Context) { SignupUser(c, db, hashService, authTokenService) })
-	r.GET("/login", func(c *gin.Context) { LoginUser(c, db, hashService, authTokenService) })
-	r.GET("/authenticate-user", restMiddleware.AccessTokenMiddleware(authTokenService), func(c *gin.Context) { AuthenticateUser(c, db, authTokenService) })
-	r.GET("/get-user", restMiddleware.AccessTokenMiddleware(authTokenService), func(c *gin.Context) { GetUser(c, db, authTokenService) })
+	r.POST("/signup", h.UserController.SignupUser)
+	r.GET("/login", h.UserController.LoginUser)
+	r.GET("/authenticate-user", h.RestMiddleware.AccessTokenMiddleware(), h.UserController.AuthenticateUser)
+	r.GET("/get-user", h.RestMiddleware.AccessTokenMiddleware(), h.UserController.GetUser)
 
 	r.Run()
 }

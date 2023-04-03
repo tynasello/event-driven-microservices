@@ -5,13 +5,9 @@ import com.example.orderservice.domain.enums.EOrderEventType;
 public class OrderEvent {
   private String eventType;
   private Integer orderId;
-  private Boolean isInventoryReserved;
-  private String productName;
-  private Integer productQuantity;
 
   public String toString() {
-    return "OrderEvent: " + eventType + " " + orderId + " " +
-        isInventoryReserved + " " + productName + " " + productQuantity;
+    return "OrderEvent: " + eventType + " " + orderId;
   }
 
   public boolean isValidEvent() {
@@ -30,7 +26,4 @@ public class OrderEvent {
     return EOrderEventType.valueOf(eventType);
   }
   public Integer getOrderId() { return orderId; }
-  public Boolean getIsInventoryReserved() { return isInventoryReserved; }
-  public String getProductName() { return productName; }
-  public Integer getProductQuantity() { return productQuantity; }
 }

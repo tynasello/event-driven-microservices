@@ -4,16 +4,8 @@ services:
   shipping-service:
     build:
       context: .
-    command: >
-      sh -c "cargo test &&
-            cargo run"
     volumes:
-      - .:/usr/src/app
-      - registry:/root/.cargo/registry
-
-volumes:
-  registry:
-    driver: local
+      - .:/usr/app
 
 networks:
   default:

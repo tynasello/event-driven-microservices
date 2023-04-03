@@ -1,11 +1,12 @@
 package main
 
 import (
-	"os"
-
-	"example.com/user-service/src/infra"
+	"example.com/user-service/src/application/usecase"
+	"example.com/user-service/src/infra/repository"
 	"example.com/user-service/src/infra/rest"
+	"example.com/user-service/src/infra/rest/controller"
 	"example.com/user-service/src/infra/rest/middleware"
+	"example.com/user-service/src/infra/service"
 	"github.com/joho/godotenv"
 )
 
@@ -15,12 +16,22 @@ func main() {
 		panic("Error loading .env file")
 	}
 
-	db := infra.Connect(os.Getenv("DB_URI"))
-	infra.Migrate(db)
+	dbService := service.NewDbService()
+	dbService.RunDbMigrations()
 
-	restMiddleware := middleware.RestMiddleware{}
-	hashService := infra.BcryptHashService{}
-	authTokenService := infra.JwtAuthTokenService{}
+	hashService := service.BcryptHashService{}
+	authTokenService := service.JwtAuthTokenService{}
 
-	rest.ServeHTTP(db, restMiddleware, hashService, authTokenService)
+	UserRepository := repository.UserRepository{Db: dbService.Db}
+
+	SignupUseCase := usecase.SignupUseCase{UserRepository: UserRepository, HashService: hashService, AuthTokenService: authTokenService}
+	LoginUseCase := usecase.LoginUseCase{UserRepository: UserRepository, HashService: hashService, AuthTokenService: authTokenService}
+	GetUserUseCase := usecase.GetUserUseCase{UserRepository: UserRepository}
+
+	RestMiddleware := middleware.RestMiddleware{AuthTokenService: authTokenService}
+	UserController := controller.UserController{SignupUseCase: SignupUseCase, LoginUseCase: LoginUseCase, GetUserUseCase: GetUserUseCase}
+
+	httpServer := rest.HttpServer{UserController: UserController, RestMiddleware: RestMiddleware}
+
+	httpServer.ServeHTTP()
 }

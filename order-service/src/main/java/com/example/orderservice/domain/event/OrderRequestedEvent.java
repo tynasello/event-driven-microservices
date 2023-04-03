@@ -1,25 +1,31 @@
 package com.example.orderservice.domain.event;
 
-public class OrderRequestedEvent {
-  private Integer orderId;
-  private String productName;
-  private Integer productQuantity;
+import com.example.orderservice.domain.enums.EOrderEventType;
 
-  public OrderRequestedEvent(Integer orderId, String productName,
-                             Integer productQuantity) {
+public class OrderRequestedEvent {
+  private String eventType;
+  private Integer orderId;
+  private String inventoryLabel;
+  private Integer inventoryQuantity;
+
+  public OrderRequestedEvent(Integer orderId, String inventoryLabel,
+                             Integer inventoryQuantity) {
+    this.eventType = EOrderEventType.ORDER_REQUESTED.toString();
     this.orderId = orderId;
-    this.productName = productName;
-    this.productQuantity = productQuantity;
+    this.inventoryLabel = inventoryLabel;
+    this.inventoryQuantity = inventoryQuantity;
   }
 
   public String toString() {
-    return "OrderRequestedEvent: " + orderId + " " + productName + " " +
-        productQuantity;
+    return "OrderRequestedEvent: " + orderId + " " + inventoryLabel + " " +
+        inventoryQuantity;
   }
+
+  public String getEventType() { return eventType; }
 
   public Integer getOrderId() { return orderId; }
 
-  public String getProductName() { return productName; }
+  public String getInventoryLabel() { return inventoryLabel; }
 
-  public Integer getProductQuantity() { return productQuantity; }
+  public Integer getInventoryQuantity() { return inventoryQuantity; }
 }

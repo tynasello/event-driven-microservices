@@ -6,21 +6,21 @@ public class OrderCancelledEvent {
   private String eventType;
   private Integer orderId;
   private Boolean isInventoryReserved;
-  private String productName;
-  private Integer productQuantity;
+  private String inventoryLabel;
+  private Integer inventoryQuantity;
 
   public OrderCancelledEvent(Integer orderId, Boolean isInventoryReserved,
-                             String productName, Integer productQuantity) {
+                             String inventoryLabel, Integer inventoryQuantity) {
     this.eventType = EOrderEventType.ORDER_CANCELLED.toString();
     this.orderId = orderId;
     this.isInventoryReserved = isInventoryReserved;
-    this.productName = productName;
-    this.productQuantity = productQuantity;
+    this.inventoryLabel = inventoryLabel;
+    this.inventoryQuantity = inventoryQuantity;
   }
 
   public String toString() {
     return "OrderCancelledEvent: " + eventType + " " + orderId + " " +
-        isInventoryReserved + " " + productName + " " + productQuantity;
+        isInventoryReserved + " " + inventoryLabel + " " + inventoryQuantity;
   }
 
   public Integer getOrderId() { return orderId; }
@@ -29,7 +29,7 @@ public class OrderCancelledEvent {
 
   public Boolean getIsInventoryReserved() { return isInventoryReserved; }
 
-  public String getProductName() { return productName; }
+  public String getInventoryLabel() { return inventoryLabel; }
 
-  public Integer getProductQuantity() { return productQuantity; }
+  public Integer getInventoryQuantity() { return inventoryQuantity; }
 }

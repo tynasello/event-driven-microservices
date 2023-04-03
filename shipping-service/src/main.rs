@@ -1,64 +1,42 @@
-mod enums;
+use domain::event::order_event::OrderEvent;
 
-use enums::BrokerEvent;
-use kafka::{
-    consumer::{Consumer, FetchOffset},
-    producer::{Producer, Record},
+use crate::application::interfaces::i_message_broker_consumer_service::IMessageBrokerConsumerService;
+
+use crate::{
+    application::usecase::order_accepted_usecase::OrderAcceptedUsecase,
+    infra::{
+        message_broker::kafka_config::{KafkaConsumer, KafkaProducer},
+        service::{
+            message_broker_consumer_service::MessageBrokerConsumerService,
+            message_broker_producer_service::MessageBrokerProducerService,
+        },
+    },
 };
 
+mod application;
+mod domain;
+mod infra;
+
 fn main() {
-    consume_broker_events()
-}
+    let mut kafka_producer = KafkaProducer::new();
+    let mut kafka_consumer = KafkaConsumer::new();
 
-fn get_host() -> Vec<String> {
-    vec!["kafka:9092".to_string()]
-}
+    let mut message_broker_producer_service = MessageBrokerProducerService {
+        kafka_producer: &mut kafka_producer,
+    };
 
-fn get_topic() -> String {
-    "edms".to_string()
-}
+    let mut order_accepted_use_case = OrderAcceptedUsecase {
+        message_broker_producer_service: &mut message_broker_producer_service,
+    };
 
-fn consume_broker_events() {
-    let hosts = get_host();
-    let topic = get_topic();
-    let mut consumer = Consumer::from_hosts(hosts)
-        .with_topic(topic)
-        .with_fallback_offset(FetchOffset::Latest)
-        .create()
-        .unwrap();
+    let mut message_broker_consumer_service = MessageBrokerConsumerService {
+        order_event: Box::new(OrderEvent {
+            event_type: "".to_string(),
+            order_id: 0,
+        }),
+        kafka_consumer: &mut kafka_consumer,
+        order_accepted_use_case: &mut order_accepted_use_case,
+    };
 
-    loop {
-        for ms in consumer.poll().unwrap().iter() {
-            for m in ms.messages() {
-                let message = std::str::from_utf8(m.value).unwrap();
-                if message == "OrderRequestAccepted" {
-                    handle_broker_event(BrokerEvent::OrderRequestAccepted);
-                }
-            }
-
-            consumer.consume_messageset(ms).unwrap();
-        }
-
-        consumer.commit_consumed().unwrap();
-    }
-}
-
-fn produce_broker_events() {
-    let hosts = get_host();
-    let topic = get_topic();
-    let mut producer = Producer::from_hosts(hosts).create().unwrap();
-
-    for i in 0..10 {
-        let buf = format!("{i}");
-        producer
-            .send(&Record::from_value(&topic, buf.as_bytes()))
-            .unwrap();
-        println!("Sent: {i}");
-    }
-}
-
-fn handle_broker_event(broker_event: BrokerEvent) {
-    if let BrokerEvent::OrderRequestAccepted = broker_event {
-        println!("Inventory found");
-    }
+    message_broker_consumer_service.start_consuming();
 }
