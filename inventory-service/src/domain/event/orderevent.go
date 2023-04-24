@@ -6,7 +6,7 @@ type OrderEvent struct {
 	EventType           string `json:"eventType"`
 	OrderId             int    `json:"orderId"`
 	InventoryLabel      string `json:"inventoryLabel"`
-	InventoryQauntity   int    `json:"inventoryQauntity"`
+	InventoryQuantity   int    `json:"inventoryQuantity"`
 	IsInventoryReserved bool   `json:"isInventoryReserved"`
 }
 

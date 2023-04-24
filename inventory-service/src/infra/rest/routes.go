@@ -19,6 +19,7 @@ func (h HttpServer) ServeHTTP() {
 	})
 
 	r.POST("/add-inventory-item", h.InventoryController.AddInventoryItem)
+	r.POST("/update-inventory-item", h.InventoryController.UpdateInventoryItem)
 
 	r.Run()
 }

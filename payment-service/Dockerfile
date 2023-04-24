@@ -1,6 +1,6 @@
 FROM python:3.10
 
-EXPOSE 8081 
+EXPOSE 8083
 
 WORKDIR /app
 COPY . .

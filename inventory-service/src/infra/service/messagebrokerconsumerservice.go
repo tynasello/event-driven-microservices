@@ -42,17 +42,17 @@ func (m MessageBrokerConsumerService) ConsumeMessage(message string) {
 }
 
 func (m MessageBrokerConsumerService) orderRequested() {
-	if m._orderEvent.OrderId == 0 || m._orderEvent.InventoryLabel == "" || m._orderEvent.InventoryQauntity == 0 {
+	if m._orderEvent.OrderId == 0 || m._orderEvent.InventoryLabel == "" || m._orderEvent.InventoryQuantity == 0 {
 		fmt.Println("Invalid ORDER_REQUESTED event")
 		return
 	}
-	m.ReserveInventoryUseCase.Execute(m._orderEvent.OrderId, m._orderEvent.InventoryLabel, m._orderEvent.InventoryQauntity)
+	m.ReserveInventoryUseCase.Execute(m._orderEvent.OrderId, m._orderEvent.InventoryLabel, m._orderEvent.InventoryQuantity)
 }
 
 func (m MessageBrokerConsumerService) orderCancelled() {
-	if m._orderEvent.OrderId == 0 || (m._orderEvent.IsInventoryReserved == true && m._orderEvent.InventoryQauntity == 0) || m._orderEvent.InventoryLabel == "" {
+	if m._orderEvent.OrderId == 0 || (m._orderEvent.IsInventoryReserved == true && m._orderEvent.InventoryQuantity == 0) || m._orderEvent.InventoryLabel == "" {
 		fmt.Println("Invalid ORDER_CANCELLED event")
 		return
 	}
-	m.OrderCancelledUseCase.Execute(m._orderEvent.IsInventoryReserved, m._orderEvent.InventoryLabel, m._orderEvent.InventoryQauntity)
+	m.OrderCancelledUseCase.Execute(m._orderEvent.IsInventoryReserved, m._orderEvent.InventoryLabel, m._orderEvent.InventoryQuantity)
 }

@@ -9,10 +9,13 @@ import com.example.orderservice.domain.enums.EOrderEventType;
 import com.example.orderservice.domain.enums.EOrderStatus;
 import com.example.orderservice.domain.event.OrderAcceptedEvent;
 import com.example.orderservice.domain.event.OrderCancelledEvent;
+import com.example.orderservice.domain.event.OrderCompletedEvent;
 import com.example.orderservice.domain.event.OrderEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
 
+@Service
 public class MessageBrokerService implements IMessageBrokerService {
 
   @Autowired UpdateOrderUseCase updateOrderUseCase;
@@ -26,7 +29,10 @@ public class MessageBrokerService implements IMessageBrokerService {
   }
 
   public void consume(String message) {
-    event = jsonService.fromJson(message, OrderEvent.class);
+    try {
+      event = jsonService.fromJson(message, OrderEvent.class);
+    } catch (Exception e) {
+    }
 
     if (event == null || !event.isValidEvent()) {
       return;
@@ -60,7 +66,9 @@ public class MessageBrokerService implements IMessageBrokerService {
     if (updatedOrderReuslt.isFailure) {
       return;
     }
-    this.send("edms", EOrderEventType.ORDER_COMPLETED.toString());
+    OrderCompletedEvent orderCompletedEvent =
+        new OrderCompletedEvent(event.getOrderId());
+    this.send("edms", jsonService.toJson(orderCompletedEvent));
   }
 
   public void inventoryNotFound() {

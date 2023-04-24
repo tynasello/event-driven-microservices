@@ -2,7 +2,9 @@ package com.example.orderservice.infra.services;
 
 import com.example.orderservice.application.interfaces.IJsonService;
 import com.google.gson.Gson;
+import org.springframework.stereotype.Service;
 
+@Service
 public class JsonService implements IJsonService {
   private Gson gson = new Gson();
 

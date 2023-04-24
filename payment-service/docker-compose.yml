@@ -1,14 +1,14 @@
 version: "3.7"
 
 services:
-  # Payment service (Python and Flask REST API)
+  # Payment service (Python)
   payment_service:
     build:
       context: ./
     environment:
       - PYTHONUNBUFFERED=1
     ports:
-      - 8081:5000
+      - 8083:5000
     volumes:
       - .:/app
 

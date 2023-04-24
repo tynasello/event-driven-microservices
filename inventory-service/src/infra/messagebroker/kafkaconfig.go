@@ -35,7 +35,7 @@ func ConfigKafkaProducer() *kafka.Producer {
 func ConfigKafkaConsumer() *kafka.Consumer {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": "kafka:9092",
-		"group.id":          "edms-group-1",
+		"group.id":          "edms-group-3",
 	})
 	if err != nil {
 		fmt.Printf("Failed to configure c: %s\n", err)
@@ -64,7 +64,7 @@ func (k KafkaBroker) ConsumeFromKafka(messageBrokerService interfaces.IMessageBr
 	run := err == nil
 
 	for run == true {
-		ev := k.Consumer.Poll(10000)
+		ev := k.Consumer.Poll(1000)
 		switch e := ev.(type) {
 		case *kafka.Message:
 			messageBrokerService.ConsumeMessage(string(e.Value))

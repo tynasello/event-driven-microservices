@@ -66,8 +66,8 @@ func (r InventoryRepository) Update(inventory entity.Inventory) *logic.Result[en
 
 	updatedInventoryResult := r.Db.Model(&inventoryModel).Updates(
 		model.InventoryModel{
-			QuantityInStock:  inventory.QuantityInStock,
 			QuantityReserved: inventory.QuantityReserved,
+			QuantityInStock:  inventory.QuantityInStock,
 		})
 	if updatedInventoryResult.Error != nil {
 		return logic.FailedResult[entity.Inventory]("Failed to update inventory item")

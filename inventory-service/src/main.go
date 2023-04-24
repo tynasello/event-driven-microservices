@@ -27,10 +27,11 @@ func main() {
 	createInventoryUseCase := usecase.CreateInventoryUseCase{InventoryRepository: &inventoryRepository}
 	reserveInventoryUseCase := usecase.ReserveInventoryUseCase{InventoryRepository: &inventoryRepository, MessageBrokerProducerService: &messageBrokerProducerService}
 	orderCancelledUseCase := usecase.OrderCancelledUseCase{InventoryRepository: &inventoryRepository}
+	updateInventoryUseCase := usecase.UpdateInventoryUseCase{InventoryRepository: &inventoryRepository}
 
 	messageBrokerConsumerService := service.MessageBrokerConsumerService{KafkaBroker: kafkaBroker, ReserveInventoryUseCase: reserveInventoryUseCase, OrderCancelledUseCase: orderCancelledUseCase}
 
-	inventoryController := controllers.InventoryController{CreateInventoryUseCase: createInventoryUseCase}
+	inventoryController := controllers.InventoryController{CreateInventoryUseCase: createInventoryUseCase, UpdateInventoryUseCase: updateInventoryUseCase}
 	httpServer := rest.HttpServer{InventoryController: inventoryController}
 
 	go messageBrokerConsumerService.StartConsuming()
