@@ -1,43 +1,56 @@
-### Services:
+Building an ordering system to learn more about microservices, event-driven architectures, Kubernetes, Kafka, and some languages (Go and Rust).
 
-All services are managed through Docker and emit and receive events from a Kafka broker.
+All services are managed through Docker and events are emitted and consumed via Kafka.
+
+Next I want to use Kubernetes to run all services and create either a CLI or web application in rust to visualize the flow of events.
+
+---
+
+### The Services
 
 order-service:
 
-- Endpoint to create an order, use user-service to login, save user username to order.
-- Emits order requested event (with order id, product name & quantity).
-
-- On inventory not found, cancel order, emit event.
-- On inventory reserved, update inventory reserved column value for order.
-
-- On transaction failed, cancel order, emit event (with order id, inventory reserved bool, product name & quantity).
-- On transaction completed, accept order request and emit event.
-
-- On order shipped, complete order.
+- REST API allows users to create orders.
+- Service emits ORDER_REQUESTED event when a user attempts to create an order.
+- On INVENTORY_NOT_RESERVED event, service updates order status column to CANCELLED and emits ORDER_CANCELLED event.
+- On INVENTORY_RESERVED event, service updates inventory reserved column to true for order.
+- On TRANSACTION_FAILED event, service updates order status column to CANCELLED , emits ORDER_CANCELLED event.
+- On TRANSACTION_COMPLETED, service updates order status column to APPROVED and emits ORDER_ACCEPTED event.
+- On ORDER_SHIPPED event, service updates order status column to COMPLETED and emits ORDER_COMPLETED event.
+- Service created with Java, PostgreSQL, and Spring Boot/Spring Data JPA/Maven.
 
 payment-service:
 
-- On inventory found attempt to perform transaction.
-- Randomly accept or decline payment, emit transaction completed/failed event (with order id).
+- On INVENTORY_RESERVED event, service attempts to perform a transaction (hard-coded probability).
+
+  - If attempted transaction is successful, service emits TRANSACTION_COMPLETED event.
+  - If attempted transaction is not successful, service emits TRANSACTION_FAILED event.
+
+- Service created with Python and MySQL.
 
 user-service:
 
-- Endpoint to signup, login.
+- REST API allows users to signup and login. Authentication implemented using JWTs.
+- Upon login, an access JWT token is stored in http-only cookies. This token is used in the order service.
+- Service created with Go, PostgreSQL, JWT, and Gin/Gorm.
 
 shipping-service:
 
-- On order accepted, emit order shipped event (with order id).
+- On ORDER_ACCEPTED event, service emits ORDER_SHIPPED event.
+- Service created with Rust, and PostgreSQL.
 
 inventory-service:
 
-- Endpoint to create inventory items.
-- On order requested, look for inventory.
+- REST API contains endpoint to create and update inventory items.
+- On ORDER_REQUESTED event, service validates that inventory is free to reserve.
 
-  - If found emit inventory found (with order id), and reserve inventory. If not found, emit inventory not found event (with order id).
+  - If inventory is found, service emits INVENTORY_RESERVED event.
+  - If inventory is not found, service emits INVENTORY_NOT_RESERVED event.
 
-- On order cancelled event, free any reserved inventory.
+- On ORDER_CANCELLED event, service frees any reserved inventory for the coresponding order.
+- Service created with Go, PostgreSQL, and Gin/Gorm.
 
-### Events
+### The Events
 
 - ORDER_REQUESTED
 - ORDER_CANCELLED
@@ -48,27 +61,3 @@ inventory-service:
 - INVENTORY_RESERVED
 - TRANSACTION_COMPLETED
 - TRANSACTION_FAILED
-
-### Domain Entities
-
-order-service:
-
-- Order entity:
-  - order username
-  - status
-  - product name
-  - product quantity
-  - inventory reserved: bool
-
-user-service:
-
-- User:
-  - username
-  - password
-
-inventory-service:
-
-- Inventory:
-  - product name
-  - quantity
-  - quantity reserved
