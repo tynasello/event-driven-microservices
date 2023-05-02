@@ -4,6 +4,7 @@ import com.example.orderservice.application.interfaces.IUserServiceWebClient;
 import com.example.orderservice.application.logic.Result;
 import com.example.orderservice.domain.enums.ECustomErrorCode;
 import com.example.orderservice.infra.rest.dto.GetUserFromUserServiceResponseDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,7 +14,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class UserServiceWebClient implements IUserServiceWebClient {
-  static String UserServiceUrl = "http://user-service:3000";
+
+  @Value("${edms.user-service.url}") private String userServiceUrl;
 
   public Result<String> getUsernameById(String accessToken) {
 
@@ -24,10 +26,10 @@ public class UserServiceWebClient implements IUserServiceWebClient {
 
     ResponseEntity<GetUserFromUserServiceResponseDto> response;
     try {
-      response = restTemplate.exchange(
-          UserServiceWebClient.UserServiceUrl + "/authenticate-user",
-          HttpMethod.GET, new HttpEntity<String>(headers),
-          GetUserFromUserServiceResponseDto.class);
+      response =
+          restTemplate.exchange(userServiceUrl + "/authenticate-user",
+                                HttpMethod.GET, new HttpEntity<String>(headers),
+                                GetUserFromUserServiceResponseDto.class);
     } catch (Exception e) {
       return Result.fail(ECustomErrorCode.AUTHENTICATION_ERROR, e.getMessage());
     }

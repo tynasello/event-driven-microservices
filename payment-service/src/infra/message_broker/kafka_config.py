@@ -38,7 +38,7 @@ def config_kafka_producer():
 def config_kafka_consumer():
     consumer_config = {
         "bootstrap.servers": "kafka:9092",
-        "group.id": "edms-group-5",
+        "group.id": "payment-service-consumer-group",
         "auto.offset.reset": "earliest",
     }
 

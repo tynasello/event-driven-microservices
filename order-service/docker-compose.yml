@@ -11,6 +11,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=order
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - EDMS_USER_SERVICE_URL=http://user-service:3000
     ports:
       - 8080:8080
     working_dir: /usr/app
@@ -22,7 +23,6 @@ services:
   # Order service database (PostgreSQL)
   order-service-db:
     image: "postgres:13.1-alpine"
-    restart: always
     environment:
       - POSTGRES_USER=order
       - POSTGRES_PASSWORD=password

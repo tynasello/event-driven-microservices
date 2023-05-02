@@ -3,7 +3,9 @@ version: "3.8"
 services:
   # User Service (Go and Gin REST API)
   user-service:
-    build: .
+    build:
+      context: .
+      dockerfile: ./Dockerfile.development
     env_file:
       - .env
     ports:

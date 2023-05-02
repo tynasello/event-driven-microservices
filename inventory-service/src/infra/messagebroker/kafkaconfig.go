@@ -23,7 +23,7 @@ func NewKafkaBroker() KafkaBroker {
 func ConfigKafkaProducer() *kafka.Producer {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": "kafka:9092",
-		"client.id":         "edms-group-1",
+		"client.id":         "inventory-service-producer",
 		"acks":              "all",
 	})
 	if err != nil {
@@ -35,7 +35,7 @@ func ConfigKafkaProducer() *kafka.Producer {
 func ConfigKafkaConsumer() *kafka.Consumer {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": "kafka:9092",
-		"group.id":          "edms-group-3",
+		"group.id":          "inventory-service-consumer-group",
 	})
 	if err != nil {
 		fmt.Printf("Failed to configure c: %s\n", err)

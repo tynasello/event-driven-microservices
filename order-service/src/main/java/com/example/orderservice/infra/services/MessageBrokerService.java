@@ -5,7 +5,6 @@ import com.example.orderservice.application.interfaces.IMessageBrokerService;
 import com.example.orderservice.application.logic.Result;
 import com.example.orderservice.application.usecase.UpdateOrderUseCase;
 import com.example.orderservice.domain.entity.Order;
-import com.example.orderservice.domain.enums.EOrderEventType;
 import com.example.orderservice.domain.enums.EOrderStatus;
 import com.example.orderservice.domain.event.OrderAcceptedEvent;
 import com.example.orderservice.domain.event.OrderCancelledEvent;

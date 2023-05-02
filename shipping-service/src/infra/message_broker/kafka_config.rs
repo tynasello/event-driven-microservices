@@ -66,6 +66,7 @@ fn config_kafka_consumer() -> Consumer {
     let consumer_result = Consumer::from_hosts(hosts)
         .with_topic(topic)
         .with_fallback_offset(FetchOffset::Latest)
+        .with_group("shipping-service-consumer-group".to_owned())
         .create();
     match consumer_result {
         Ok(consumer) => consumer,

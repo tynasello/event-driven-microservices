@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class KafkaConsumer {
   @Autowired private IMessageBrokerService messageBrokerService;
 
-  @KafkaListener(topics = "edms", groupId = "edms-group-1")
+  @KafkaListener(topics = "edms", groupId = "order-service-consumer-group")
   public void listenGroupEdms(String message) {
     messageBrokerService.consume(message);
   }
