@@ -1,10 +1,10 @@
-# order service
+# inventory service
 apiVersion: v1
 kind: Service
 metadata:
-  name: order-service-db-service
+  name: inventory-service-db-service
   labels:
-    app: order-service-db-service
+    app: inventory-service-db-service
     tier: database
   namespace: edms
 spec:
@@ -12,39 +12,39 @@ spec:
     - port: 5432
       targetPort: 5432
   selector:
-    app: order-service-db
+    app: inventory-service-db
     tier: database
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: order-service-db
+  name: inventory-service-db
   labels:
-    app: order-service-db
+    app: inventory-service-db
     tier: database
   namespace: edms
 spec:
   selector:
     matchLabels:
-      app: order-service-db
+      app: inventory-service-db
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: order-service-db
+        app: inventory-service-db
         tier: database
     spec:
       containers:
-        - name: order-service-db
+        - name: inventory-service-db
           image: postgres:12
           imagePullPolicy: "IfNotPresent"
           env:
             - name: POSTGRES_DB
-              value: orderdb
+              value: inventorydb
             - name: POSTGRES_USER
-              value: order
+              value: inventory
             - name: POSTGRES_PASSWORD
               value: password
           ports:
@@ -54,7 +54,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: order-service-service
+  name: inventory-service-service
   namespace: edms
 spec:
   ports:
@@ -62,42 +62,34 @@ spec:
       port: 8080
       targetPort: 8080
   selector:
-    app: order-service
+    app: inventory-service
   type: NodePort
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: order-service
+  name: inventory-service
   namespace: edms
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: order-service
+      app: inventory-service
   template:
     metadata:
       labels:
-        app: order-service
+        app: inventory-service
     spec:
       containers:
-        - image: tynas/order-service
-          name: order-service
+        - image: tynas/inventory-service
+          name: inventory-service
           ports:
             - containerPort: 8080
           env:
-            - name: SPRING_DATASOURCE_PASSWORD
-              value: password
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://order-service-db-service:5432/orderdb?createDatabaseIfNotExist=true
-            - name: SPRING_DATASOURCE_USERNAME
-              value: order
-            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-              value: update
-            - name: EDMS_KAFKA_BOOTSTRAP_ADDRESS
-              value: kafka-service:9092
-            - name: EDMS_USER_SERVICE_URL
-              value: http://user-service-service:8080
-            - name: SERVER_PORT
+            - name: DB_URI
+              value: host=inventory-service-db-service user=inventory password=password dbname=inventorydb port=5432
+            - name: KAFKA_BOOTSTRAP_ADDRESS
+              value: "kafka-service:9092"
+            - name: PORT
               value: "8080"

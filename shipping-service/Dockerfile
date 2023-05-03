@@ -1,4 +1,6 @@
 FROM rust
 WORKDIR /usr/app
 COPY . .
-CMD ["cargo", "run"]
+RUN cargo build --release
+CMD ["target/release/shipping-service"]
+

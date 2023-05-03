@@ -3,11 +3,15 @@ version: "3.8"
 services:
   # Inventory service (Go and Gin REST API)
   inventory-service:
-    build: .
-    env_file:
-      - .env
+    build:
+      context: .
+      dockerfile: ./Dockerfile.development
+    environment:
+      - PORT=8080
+      - DB_URI=host=inventory-service-db user=inventory password=password dbname=inventorydb port=5432
+      - KAFKA_BOOTSTRAP_ADDRESS=kafka:9092
     ports:
-      - 8081:3000
+      - 8081:8080
     depends_on:
       - inventory-service-db
     volumes:

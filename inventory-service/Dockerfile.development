@@ -9,4 +9,3 @@ RUN go install github.com/cosmtrek/air@latest
 COPY . .
 RUN go mod tidy
 
-ENTRYPOINT ["go", "run", "./src/main.go"]

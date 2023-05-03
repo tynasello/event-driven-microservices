@@ -2,9 +2,12 @@ from application.usecase.attempt_transaction_usecase import AttemptTransactionUs
 from infra.message_broker.kafka_config import KafkaConsumer, KafkaProducer
 from infra.service.message_broker_consumer_service import MessageBrokerConsumerService
 from infra.service.message_broker_producer_service import MessageBrokerProducerService
+from dotenv import load_dotenv
 
 
 def main():
+    load_dotenv()
+
     kafka_consumer = KafkaConsumer()
     kafka_producer = KafkaProducer()
 

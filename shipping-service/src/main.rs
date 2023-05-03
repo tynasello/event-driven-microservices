@@ -1,7 +1,6 @@
-use domain::event::order_event::OrderEvent;
+use dotenv::dotenv;
 
 use crate::application::interfaces::i_message_broker_consumer_service::IMessageBrokerConsumerService;
-
 use crate::{
     application::usecase::order_accepted_usecase::OrderAcceptedUsecase,
     infra::{
@@ -12,12 +11,15 @@ use crate::{
         },
     },
 };
+use domain::event::order_event::OrderEvent;
 
 mod application;
 mod domain;
 mod infra;
 
 fn main() {
+    dotenv().ok();
+
     let mut kafka_producer = KafkaProducer::new();
     let mut kafka_consumer = KafkaConsumer::new();
 

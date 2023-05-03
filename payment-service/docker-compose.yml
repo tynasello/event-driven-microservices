@@ -3,12 +3,10 @@ version: "3.7"
 services:
   # Payment service (Python)
   payment_service:
-    build:
-      context: ./
+    build: .
     environment:
       - PYTHONUNBUFFERED=1
-    ports:
-      - 8083:5000
+      - KAFKA_BROKER_ADDRESS=kafka:9092
     volumes:
       - .:/app
 

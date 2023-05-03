@@ -92,3 +92,5 @@ spec:
           env:
             - name: DB_URI
               value: user:password@tcp(user-service-db-service:5434)/userdb?parseTime=true
+            - name: PORT
+              value: "8080"

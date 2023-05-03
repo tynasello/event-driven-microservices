@@ -2,6 +2,7 @@ use kafka::{
     consumer::{Consumer, FetchOffset},
     producer::{Producer, Record},
 };
+use std::env;
 
 pub struct KafkaProducer {
     producer: Producer,
@@ -75,5 +76,6 @@ fn config_kafka_consumer() -> Consumer {
 }
 
 fn get_host() -> Vec<String> {
-    vec!["kafka:9092".to_string()]
+    let kafka_bootstrap_address = env::var("KAFKA_BOOTSTRAP_ADDRESS").unwrap();
+    vec![kafka_bootstrap_address]
 }

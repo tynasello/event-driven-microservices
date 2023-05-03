@@ -1,0 +1,22 @@
+# payment service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: edms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - image: tynas/payment-service
+          name: payment-service
+          env:
+            - name: KAFKA_BOOTSTRAP_ADDRESS
+              value: "kafka-service:9092"

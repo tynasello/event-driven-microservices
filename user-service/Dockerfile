@@ -2,7 +2,7 @@ FROM golang:1.20.0
 
 WORKDIR /usr/src/app
 
-EXPOSE 8082
+EXPOSE 8080
 
 RUN go install github.com/cosmtrek/air@latest
 

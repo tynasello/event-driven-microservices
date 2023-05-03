@@ -1,3 +1,4 @@
+import os
 from confluent_kafka import Consumer, Producer
 
 
@@ -29,15 +30,17 @@ class KafkaConsumer:
 
 
 def config_kafka_producer():
+    kafka_broker_address = os.environ.get("KAFKA_BOOTSTRAP_ADDRESS")
     producer_config = {
-        "bootstrap.servers": "kafka:9092",
+        "bootstrap.servers": kafka_broker_address,
     }
     return Producer(producer_config)
 
 
 def config_kafka_consumer():
+    kafka_broker_address = os.environ.get("KAFKA_BOOTSTRAP_ADDRESS")
     consumer_config = {
-        "bootstrap.servers": "kafka:9092",
+        "bootstrap.servers": kafka_broker_address,
         "group.id": "payment-service-consumer-group",
         "auto.offset.reset": "earliest",
     }
