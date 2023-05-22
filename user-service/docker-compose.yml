@@ -8,7 +8,7 @@ services:
       dockerfile: ./Dockerfile.development
     environment:
       - PORT=8080
-      - DB_URI=user:password@tcp(user-service-db:5434)/userdb?parseTime=true
+      - DB_URI=user:password@tcp(user-service-db:3306)/userdb?parseTime=true
     ports:
       - 8082:8080
     depends_on:
@@ -27,7 +27,7 @@ services:
       - MYSQL_PASSWORD=password
       - MYSQL_ROOT_PASSWORD=password
     ports:
-      - "5434:3306"
+      - 5434:3306
     volumes:
       - user-service-postgres-db-volume:/var/lib/mysql
     healthcheck:

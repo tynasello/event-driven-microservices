@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::domain::enums;
+use crate::domain::enums::e_order_event::EOrderEvent;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OrderEvent {
@@ -12,12 +12,9 @@ pub struct OrderEvent {
 
 impl OrderEvent {
     pub fn is_valid_to_consume(&self) -> bool {
-        let order_accepted_event = enums::e_order_event::EOrderEvent::to_string(
-            &enums::e_order_event::EOrderEvent::OrderAccepted,
-        );
-        if self.event_type == order_accepted_event {
+        if self.event_type == EOrderEvent::to_string(&EOrderEvent::OrderAccepted) {
             return true;
-        }
+        };
         return false;
     }
 }

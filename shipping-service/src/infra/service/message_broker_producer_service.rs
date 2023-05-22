@@ -4,11 +4,17 @@ use crate::{
 };
 
 pub struct MessageBrokerProducerService<'a> {
-    pub kafka_producer: &'a mut KafkaProducer,
+    kafka_producer: &'a mut KafkaProducer,
 }
 
-impl<'a> IMessageBrokerProducerService for MessageBrokerProducerService<'a> {
+impl<'a> MessageBrokerProducerService<'a> {
+    pub fn new(kafka_producer: &'a mut KafkaProducer) -> Self {
+        Self { kafka_producer }
+    }
+}
+
+impl IMessageBrokerProducerService for MessageBrokerProducerService<'_> {
     fn publish_message(&mut self, message: &str) {
-        self.kafka_producer.send_to_kafka(message.to_string());
+        self.kafka_producer.send_to_kafka(message);
     }
 }

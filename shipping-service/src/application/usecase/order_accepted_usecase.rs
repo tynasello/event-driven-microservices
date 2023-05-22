@@ -4,15 +4,21 @@ use crate::{
 };
 
 pub struct OrderAcceptedUsecase<'a> {
-    pub message_broker_producer_service: &'a mut dyn IMessageBrokerProducerService,
+    message_broker_producer_service: &'a mut dyn IMessageBrokerProducerService,
 }
 
 impl<'a> OrderAcceptedUsecase<'a> {
+    pub fn new(message_broker_producer_service: &'a mut dyn IMessageBrokerProducerService) -> Self {
+        Self {
+            message_broker_producer_service,
+        }
+    }
+
     pub fn execute(&mut self, order_id: i64) {
         // Some other business logic can occur here
 
         let order_shipped_event = OrderShippedEvent::new(order_id);
-        let order_shipped_event_json = match serde_json::to_string(&order_shipped_event) {
+        let order_shipped_event_json: String = match serde_json::to_string(&order_shipped_event) {
             Ok(order_shipped_event_json) => order_shipped_event_json,
             Err(e) => {
                 println!("Error converting order shipped event to json: {}", e);
@@ -20,6 +26,6 @@ impl<'a> OrderAcceptedUsecase<'a> {
             }
         };
         self.message_broker_producer_service
-            .publish_message(&order_shipped_event_json);
+            .publish_message(order_shipped_event_json.as_str());
     }
 }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::domain::enums;
+use crate::domain::enums::e_order_event::EOrderEvent;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OrderShippedEvent {
@@ -12,9 +12,8 @@ pub struct OrderShippedEvent {
 
 impl OrderShippedEvent {
     pub fn new(order_id: i64) -> Self {
-        let e_order_accpeted = enums::e_order_event::EOrderEvent::OrderShipped.to_string();
         Self {
-            event_type: e_order_accpeted,
+            event_type: EOrderEvent::OrderShipped.to_string(),
             order_id,
         }
     }

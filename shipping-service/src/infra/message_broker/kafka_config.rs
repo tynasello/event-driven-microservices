@@ -12,14 +12,14 @@ pub struct KafkaConsumer {
     consumer: Consumer,
 }
 
-impl<'a> KafkaProducer {
+impl KafkaProducer {
     pub fn new() -> Self {
         Self {
             producer: config_kafka_producer(),
         }
     }
 
-    pub fn send_to_kafka(&mut self, message: String) {
+    pub fn send_to_kafka(&mut self, message: &str) {
         let record = Record::from_value("edms", message.as_bytes());
         let message_sent_result = self.producer.send(&record);
 
@@ -30,7 +30,7 @@ impl<'a> KafkaProducer {
     }
 }
 
-impl<'a> KafkaConsumer {
+impl KafkaConsumer {
     pub fn new() -> Self {
         Self {
             consumer: config_kafka_consumer(),
@@ -40,12 +40,12 @@ impl<'a> KafkaConsumer {
     pub fn consume_from_kafka(&mut self) -> Vec<String> {
         let mut messages = vec![];
         messages.clear();
-        for ms in self.consumer.poll().unwrap().iter() {
-            for raw_message in ms.messages() {
+        for message_set in self.consumer.poll().unwrap().iter() {
+            for raw_message in message_set.messages() {
                 let message = std::str::from_utf8(raw_message.value).unwrap();
                 messages.push(message.to_string());
             }
-            self.consumer.consume_messageset(ms).unwrap();
+            self.consumer.consume_messageset(message_set).unwrap();
         }
         self.consumer.commit_consumed().unwrap();
         return messages;
@@ -63,9 +63,9 @@ fn config_kafka_producer() -> Producer {
 
 fn config_kafka_consumer() -> Consumer {
     let hosts = get_host();
-    let topic = "edms".to_string();
+    let topic = "edms";
     let consumer_result = Consumer::from_hosts(hosts)
-        .with_topic(topic)
+        .with_topic(topic.to_string())
         .with_fallback_offset(FetchOffset::Latest)
         .with_group("shipping-service-consumer-group".to_owned())
         .create();
