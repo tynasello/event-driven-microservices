@@ -1,0 +1,11 @@
+FROM rust AS builder
+WORKDIR /usr/app
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir src && echo "fn main() {println!(\"if you see this, the build broke\")}" > src/main.rs
+RUN cargo build --release
+RUN rm src/*.rs
+
+COPY src ./src
+RUN cargo build --release --frozen --offline
+
+CMD ["target/release/management-service"]
