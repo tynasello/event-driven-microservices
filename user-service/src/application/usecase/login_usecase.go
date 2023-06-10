@@ -20,7 +20,7 @@ func (u LoginUseCase) Execute(username string, password string) *logic.Result[st
 		return logic.FailedResult[string]("Failed to get user")
 	}
 
-	existingUser := existingUserResult.GetValue()
+	existingUser, _ := existingUserResult.GetValue()
 
 	err := u.HashService.ValidateHash(existingUser.Password, password)
 	if err != nil {

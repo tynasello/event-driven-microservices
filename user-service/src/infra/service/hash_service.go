@@ -15,8 +15,8 @@ func (hs BcryptHashService) Hash(value string) (string, error) {
 	return hashedValue, nil
 }
 
-func (hs BcryptHashService) ValidateHash(value string, providedValue string) error {
-	err := bcrypt.CompareHashAndPassword([]byte(value), []byte(providedValue))
+func (hs BcryptHashService) ValidateHash(hashedValue string, rawValue string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedValue), []byte(rawValue))
 	if err != nil {
 		return err
 	}

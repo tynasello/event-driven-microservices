@@ -30,7 +30,7 @@ func (r UserRepository) Create(user entity.User) *logic.Result[entity.User] {
 func (r UserRepository) GetByUsername(username string) *logic.Result[entity.User] {
 	var existingUserModel model.UserModel
 
-	existingUserResult := r.Db.Where("username = ?", username).First(&existingUserModel)
+	existingUserResult := r.Db.First(&existingUserModel, "username = ?", username)
 
 	if existingUserResult.Error != nil {
 		return logic.FailedResult[entity.User]("Failed to get user")

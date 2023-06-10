@@ -17,7 +17,7 @@ func (u GetUserUseCase) Execute(username string) *logic.Result[entity.User] {
 		return logic.FailedResult[entity.User]("Failed to get user")
 	}
 
-	existingUser := existingUserResult.GetValue()
+	existingUser, _ := existingUserResult.GetValue()
 
-	return logic.OkResult(existingUser)
+	return logic.OkResult(*existingUser)
 }

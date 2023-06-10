@@ -8,9 +8,9 @@ import (
 )
 
 type UserController struct {
-	SignupUseCase  usecase.SignupUseCase
-	GetUserUseCase usecase.GetUserUseCase
-	LoginUseCase   usecase.LoginUseCase
+	SignupUseCase  *usecase.SignupUseCase
+	GetUserUseCase *usecase.GetUserUseCase
+	LoginUseCase   *usecase.LoginUseCase
 }
 
 func (u UserController) SignupUser(c *gin.Context) {
@@ -24,15 +24,16 @@ func (u UserController) SignupUser(c *gin.Context) {
 	signupResult := u.SignupUseCase.Execute(requestBody.Username, requestBody.Password)
 
 	if signupResult.IsFailure {
+		signupResultErrorMessage, _ := signupResult.GetErrorMessage()
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": signupResult.GetErrorMessage(),
+			"message": *signupResultErrorMessage,
 		})
 		return
 	}
 
-	accessToken := signupResult.GetValue()
+	accessToken, _ := signupResult.GetValue()
 
-	c.SetCookie("access-token", accessToken, 60*60, "/", "localhost", false, true)
+	c.SetCookie("access-token", *accessToken, 60*60, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{})
 }
@@ -48,15 +49,16 @@ func (u UserController) LoginUser(c *gin.Context) {
 	loginResult := u.LoginUseCase.Execute(requestBody.Username, requestBody.Password)
 
 	if loginResult.IsFailure {
+		loginResultErrorMessage, _ := loginResult.GetErrorMessage()
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": loginResult.GetErrorMessage(),
+			"message": *loginResultErrorMessage,
 		})
 		return
 	}
 
-	accessToken := loginResult.GetValue()
+	accessToken, _ := loginResult.GetValue()
 
-	c.SetCookie("access-token", accessToken, 60*60, "/", "localhost", false, true)
+	c.SetCookie("access-token", *accessToken, 60*60, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{})
 }
@@ -73,13 +75,14 @@ func (u UserController) GetUser(c *gin.Context) {
 	getUserResult := u.GetUserUseCase.Execute(username)
 
 	if getUserResult.IsFailure {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": getUserResult.GetErrorMessage()})
+		getUserResultErrorMessage, _ := getUserResult.GetErrorMessage()
+		c.JSON(http.StatusInternalServerError, gin.H{"message": *getUserResultErrorMessage})
 		return
 	}
 
-	user := getUserResult.GetValue()
+	user, _ := getUserResult.GetValue()
 
-	c.JSON(http.StatusOK, gin.H{"user": user})
+	c.JSON(http.StatusOK, gin.H{"user": *user})
 }
 
 func (u UserController) AuthenticateUser(c *gin.Context) {

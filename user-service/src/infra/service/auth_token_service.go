@@ -20,7 +20,7 @@ func (j JwtAuthTokenService) GenerateToken(username string, expirationHours time
 	claims := JwtCustomClaims{
 		username,
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationHours * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationHours)),
 		},
 	}
 
@@ -40,8 +40,9 @@ func (j JwtAuthTokenService) ValidateToken(signedToken string) (string, error) {
 		return "", err
 	}
 
-	// check if token is not expired and claims contains a username
-	if claims, ok := token.Claims.(*JwtCustomClaims); !ok || !token.Valid || claims.Username == "" {
+	// check if token is signed and not expireed, and claims contains a username
+	if claims, ok := token.Claims.(*JwtCustomClaims); !ok || !token.Valid || claims.Username == "" || claims.ExpiresAt.Time.Before(time.Now()) {
+
 		return "", errors.New("Invalid token")
 	} else {
 		return claims.Username, nil
