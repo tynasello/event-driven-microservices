@@ -8,6 +8,7 @@ services:
       - USER_SERVICE_URI=http://user-service:8080
       - ORDER_SERVICE_URI=http://order-service:8080
       - INVENTORY_SERVICE_URI=http://inventory-service:8080
+      - CLI_COMMAND=${CLI_COMMAND}
 
 networks:
   default:

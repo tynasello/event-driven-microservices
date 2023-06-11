@@ -20,12 +20,15 @@ impl<'a> SignupUsecase<'a> {
         map.insert("username", username);
         map.insert("password", password);
 
-        let response = self.rest_service.fetch(user_service_uri, "", map).await;
+        let response_result = self
+            .rest_service
+            .fetch("POST", user_service_uri, "", map)
+            .await;
 
-        match response {
+        match response_result {
             Ok(response) => response
                 .cookies
-                .get("access-token")
+                .get("access_token")
                 .map(|cookie| cookie.to_string())
                 .ok_or("".to_string()),
             Err(error) => {

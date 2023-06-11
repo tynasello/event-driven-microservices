@@ -23,12 +23,12 @@ impl<'a> UpdateInventoryUsecase<'a> {
         map.insert("label", label);
         map.insert("addToQuantity", add_to_quantity_string);
 
-        let response = self
+        let response_result = self
             .rest_service
-            .fetch(inventory_service_uri, "", map)
+            .fetch("POST", inventory_service_uri, "", map)
             .await;
 
-        return match response {
+        return match response_result {
             Ok(response) => Ok(response.body),
             Err(error) => Err(error),
         };

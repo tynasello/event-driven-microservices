@@ -24,12 +24,12 @@ impl<'a> AddInventoryUsecase<'a> {
         map.insert("quantityInStock", quantity_in_stock_string);
         map.insert("quantityReserved", "0");
 
-        let response = self
+        let response_result = self
             .rest_service
-            .fetch(inventory_service_uri, "", map)
+            .fetch("POST", inventory_service_uri, "", map)
             .await;
 
-        match response {
+        match response_result {
             Ok(response) => {
                 return Ok(response.body);
             }

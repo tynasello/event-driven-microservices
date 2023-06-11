@@ -28,12 +28,12 @@ impl<'a> CreateOrderUsecase<'a> {
         map.insert("productName", product_name);
         map.insert("produtQuantity", product_quantity_string);
 
-        let response = self
+        let response_result = self
             .rest_service
-            .fetch(inventory_service_uri, &access_token, map)
+            .fetch("POST", inventory_service_uri, &access_token, map)
             .await;
 
-        match response {
+        match response_result {
             Ok(response) => {
                 return Ok(response.body);
             }

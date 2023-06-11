@@ -11,6 +11,7 @@ pub struct RestServiceResponse {
 pub trait IRestService {
     async fn fetch(
         &self,
+        method: &str,
         endpoint: &str,
         access_token: &str,
         body: HashMap<&str, &str>,

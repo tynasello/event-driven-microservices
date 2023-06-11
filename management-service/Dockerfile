@@ -7,5 +7,4 @@ RUN rm src/*.rs
 
 COPY src ./src
 RUN cargo build --release --frozen --offline
-
-CMD ["target/release/management-service"]
+ENTRYPOINT target/release/management-service $CLI_COMMAND

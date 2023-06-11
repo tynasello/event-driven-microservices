@@ -11,6 +11,7 @@ pub struct RestService {}
 impl IRestService for RestService {
     async fn fetch(
         &self,
+        method: &str,
         endpoint: &str,
         access_token: &str,
         body: HashMap<&str, &str>,
@@ -21,18 +22,29 @@ impl IRestService for RestService {
         let access_token_cookie: &str = &["access_token=", access_token].concat();
         request_headers.insert(COOKIE, HeaderValue::from_str(access_token_cookie).unwrap());
 
-        let response = client
-            .post(endpoint)
-            .headers(request_headers)
-            .json(&body)
-            .send()
-            .await;
+        let response = if method == "POST" {
+            client
+                .post(endpoint)
+                .headers(request_headers)
+                .json(&body)
+                .send()
+                .await
+        } else if method == "GET" {
+            client
+                .get(endpoint)
+                .headers(request_headers)
+                .json(&body)
+                .send()
+                .await
+        } else {
+            return Err("Invalid method for http request".to_string());
+        };
 
         match response {
             Ok(response) => {
                 if response.status().is_success() == false {
-                    // instead return actual api response
-                    return Err("Error making api call".to_string());
+                    let response_body = response.text().await.unwrap_or_else(|_| "".to_string());
+                    return Err(response_body);
                 }
 
                 let response_headers = response.headers();

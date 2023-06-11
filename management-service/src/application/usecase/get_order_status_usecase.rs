@@ -22,12 +22,12 @@ impl<'a> GetOrderStatusUsecase<'a> {
         let mut map = HashMap::new();
         map.insert("id", id_string);
 
-        let response = self
+        let response_result = self
             .rest_service
-            .fetch(inventory_service_uri, &access_token, map)
+            .fetch("GET", inventory_service_uri, &access_token, map)
             .await;
 
-        match response {
+        match response_result {
             Ok(response) => {
                 return Ok(response.body);
             }

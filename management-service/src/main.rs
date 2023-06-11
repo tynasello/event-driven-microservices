@@ -1,16 +1,19 @@
 use application::{
     interfaces::i_rest_service::IRestService,
-    usecase::{login_usecase::LoginUsecase, update_inventory_usecase::UpdateInventoryUsecase},
+    subcommand::{
+        add_inventory_subcommand::add_inventory_subcommand,
+        create_order_subcommand::create_order_subcommand,
+        get_order_status_subcommand::get_order_status_subcommand,
+        login_subcommand::login_subcommand, signup_subcommand::signup_subcommand,
+        subcommand_helper::create_subcommand,
+        update_inventory_subcommand::update_inventory_subcommand,
+    },
 };
+use clap::App;
+use domain::cli::cli_commands::get_cli_commands;
 
 use crate::{
-    application::{
-        interfaces::i_message_broker_consumer_service::IMessageBrokerConsumerService,
-        usecase::{
-            add_inventory_usecase::AddInventoryUsecase, create_order_usecase::CreateOrderUsecase,
-            get_order_status_usecase::GetOrderStatusUsecase, signup_usecase::SignupUsecase,
-        },
-    },
+    application::interfaces::i_message_broker_consumer_service::IMessageBrokerConsumerService,
     infra::{
         message_broker::kafka_config::KafkaConsumer,
         service::{
@@ -21,75 +24,57 @@ use crate::{
 };
 
 mod application;
+mod domain;
 mod infra;
 
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
 
-    // consume kafka events
-    let kafka_consumer = &mut KafkaConsumer::new();
-    let message_broker_consumer_service = &mut MessageBrokerConsumerService { kafka_consumer };
-    message_broker_consumer_service.start_consuming();
+    let cli_subcommands = get_cli_commands();
+
+    let matches = App::new("Edrims Management Service")
+        .version("1.0")
+        .author("tynasello")
+        .about("A CLI application to interact with and oversee the edrims system")
+        .subcommands(
+            cli_subcommands
+                .iter()
+                .map(|&(name, ref args)| create_subcommand(name, args))
+                .collect::<Vec<_>>(),
+        )
+        .get_matches();
 
     let rest_service: Box<dyn IRestService> = Box::new(RestService {});
 
-    // login / signup
-    let signup_user_service = SignupUsecase::new(&rest_service);
-    let _signup_result = signup_user_service.execute("baba", "jaga");
-
-    let login_user_service = LoginUsecase::new(&rest_service);
-    let access_token = login_user_service.execute("baba", "jaga").await;
-
-    // create order
-    match access_token {
-        Ok(access_token) => {
-            println!("Access token: {}", access_token);
-            let create_order_usecase = CreateOrderUsecase::new(&rest_service);
-            let create_order_result = create_order_usecase
-                .execute(access_token, "carrot", 10)
-                .await;
-            return println!(
-                "Result: {}",
-                create_order_result.unwrap_or_else(|error| error)
-            );
+    match matches.subcommand() {
+        ("login", Some(login_matches)) => {
+            login_subcommand(login_matches, &rest_service).await;
         }
-        Err(_) => {
-            println!("Error creating a order");
+        ("signup", Some(signup_matches)) => {
+            signup_subcommand(signup_matches, &rest_service).await;
         }
-    }
-
-    // get order service
-    match access_token {
-        Ok(access_token) => {
-            println!("Access token: {}", access_token);
-            let get_order_status_usecase = GetOrderStatusUsecase::new(&rest_service);
-            let get_order_status_result = get_order_status_usecase.execute(access_token, 1).await;
-            return println!(
-                "Result: {}",
-                get_order_status_result.unwrap_or_else(|error| error)
-            );
+        ("create-order", Some(create_order_matches)) => {
+            create_order_subcommand(create_order_matches, &rest_service).await;
         }
-        Err(_) => {
-            println!("Error getting order");
+        ("get-order-status", Some(get_order_status_matches)) => {
+            get_order_status_subcommand(get_order_status_matches, &rest_service).await;
+        }
+        ("add-inventory", Some(add_inventory_matches)) => {
+            add_inventory_subcommand(add_inventory_matches, &rest_service).await;
+        }
+        ("update-inventory", Some(update_inventory_matches)) => {
+            update_inventory_subcommand(update_inventory_matches, &rest_service).await;
+        }
+        _ => {
+            println!("Invalid command. Use --help to see the available commands.");
         }
     }
 
-    // add inventory
-    let add_inventory_usecase = AddInventoryUsecase::new(&rest_service);
-    let add_inventory_result = add_inventory_usecase.execute("carrot", 10).await;
-    println!(
-        "Result: {}",
-        add_inventory_result.unwrap_or_else(|error| error)
-    );
-
-    // update inventory
-    let update_inventory_usecase = UpdateInventoryUsecase::new(&rest_service);
-    let update_inventory_result = update_inventory_usecase.execute("carrot", 10).await;
-    println!(
-        "Result: {}",
-        update_inventory_result.unwrap_or_else(|error| error)
-    );
+    // // consume kafka events
+    // let kafka_consumer = &mut KafkaConsumer::new();
+    // let message_broker_consumer_service = &mut MessageBrokerConsumerService { kafka_consumer };
+    // message_broker_consumer_service.start_consuming();
 
     return;
 }
