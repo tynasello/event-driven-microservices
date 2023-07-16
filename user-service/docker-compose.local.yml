@@ -6,7 +6,7 @@ services:
     container_name: edrims-user-service
     build:
       context: .
-      dockerfile: ./Dockerfile.development
+      dockerfile: ./Dockerfile.local
     env_file:
       - .env
     ports:

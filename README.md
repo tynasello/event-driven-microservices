@@ -9,7 +9,7 @@ All services are managed by Kubernetes (can use docker-compose for local develop
 management-service:
 
 - CLI allowing a user to perform actions, and oversee and ~~view the flow of events in the system~~.
-- Service created with Rust and the Clap crate
+- Service created with Rust and the Clap crate.
 
 order-service:
 

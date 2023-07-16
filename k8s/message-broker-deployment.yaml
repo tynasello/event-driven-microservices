@@ -84,6 +84,8 @@ spec:
               value: PLAINTEXT://:9092
             - name: KAFKA_ADVERTISED_LISTENERS
               value: PLAINTEXT://kafka-service:9092
+            - name: KAFKA_CREATE_TOPICS
+              value: "edms:1:1"
           image: wurstmeister/kafka
           imagePullPolicy: IfNotPresent
           name: kafka

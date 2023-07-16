@@ -4,6 +4,7 @@ services:
   # Payment service (Python)
   payment_service:
     build: .
+    container_name: edrims-payment-service
     environment:
       - PYTHONUNBUFFERED=1
       - KAFKA_BROKER_ADDRESS=kafka:9092

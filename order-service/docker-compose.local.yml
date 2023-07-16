@@ -4,6 +4,7 @@ services:
   # Order service (Java and Spring Boot REST API)
   order-service:
     image: maven:3.8-eclipse-temurin-19-alpine
+    container_name: edrims-order-service
     depends_on:
       - order-service-db
     environment:
@@ -25,6 +26,7 @@ services:
   # Order service database (PostgreSQL)
   order-service-db:
     image: "postgres:13.1-alpine"
+    container_name: edrims-order-service-db
     environment:
       - POSTGRES_USER=order
       - POSTGRES_PASSWORD=password

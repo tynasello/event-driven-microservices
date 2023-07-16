@@ -2,7 +2,10 @@ version: "3.0"
 
 services:
   shipping-service:
-    build: .
+    build:
+      context: .
+      dockerfile: ./Dockerfile.local
+    container_name: edrims-shipping-service
     environment:
       - KAFKA_BOOTSTRAP_ADDRESS=kafka:9092
     volumes:

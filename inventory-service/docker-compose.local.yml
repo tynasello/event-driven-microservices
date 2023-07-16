@@ -5,11 +5,10 @@ services:
   inventory-service:
     build:
       context: .
-      dockerfile: ./Dockerfile.development
-    environment:
-      - PORT=8080
-      - DB_URI=host=inventory-service-db user=inventory password=password dbname=inventorydb port=5432
-      - KAFKA_BOOTSTRAP_ADDRESS=kafka:9092
+      dockerfile: ./Dockerfile.local
+    container_name: edrims-inventory-service
+    env_file:
+      - .env
     ports:
       - 8081:8080
     depends_on:
@@ -21,12 +20,13 @@ services:
   # Inventory service database (PostgreSQL)
   inventory-service-db:
     image: postgres:alpine
+    container_name: edrims-inventory-service-db
     environment:
       - POSTGRES_USER=inventory
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=inventorydb
     ports:
-      - 5433:5432
+      - 5436:5432
     volumes:
       - inventory-service-postgres-db-volume:/var/lib/postgresql/data
 
