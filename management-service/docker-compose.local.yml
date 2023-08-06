@@ -1,0 +1,19 @@
+version: "3.0"
+
+services:
+  management-service:
+    container_name: edms-management-service
+    build:
+      context: .
+      dockerfile: ./Dockerfile.local
+    environment:
+      - KAFKA_BOOTSTRAP_ADDRESS=kafka:9092
+      - USER_SERVICE_URI=http://user-service:8080
+      - ORDER_SERVICE_URI=http://order-service:8080
+      - INVENTORY_SERVICE_URI=http://inventory-service:8080
+      - CLI_COMMAND=${CLI_COMMAND}
+
+networks:
+  default:
+    name: edms_network
+    external: true

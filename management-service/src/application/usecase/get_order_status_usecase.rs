@@ -5,17 +5,16 @@ use std::env;
 use crate::application::interfaces::i_rest_service::IRestService;
 
 pub struct GetOrderStatusUsecase<'a> {
-    rest_service: &'a Box<dyn IRestService>,
+    rest_service: &'a dyn IRestService,
 }
 
 impl<'a> GetOrderStatusUsecase<'a> {
-    pub fn new(rest_service: &'a Box<dyn IRestService>) -> Self {
+    pub fn new(rest_service: &'a dyn IRestService) -> Self {
         Self { rest_service }
     }
 
     pub async fn execute(&self, access_token: String, id: i32) -> Result<String, String> {
-        let inventory_service_uri: &str =
-            &(env::var("INVENTORY_SERVICE_URI").unwrap() + "/get-order");
+        let inventory_service_uri: &str = &(env::var("ORDER_SERVICE_URI").unwrap() + "/get-order");
 
         let id_string: &str = &id.to_string();
 

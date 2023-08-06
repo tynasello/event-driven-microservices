@@ -5,11 +5,11 @@ use std::env;
 use crate::application::interfaces::i_rest_service::IRestService;
 
 pub struct UpdateInventoryUsecase<'a> {
-    rest_service: &'a Box<dyn IRestService>,
+    rest_service: &'a dyn IRestService,
 }
 
 impl<'a> UpdateInventoryUsecase<'a> {
-    pub fn new(rest_service: &'a Box<dyn IRestService>) -> Self {
+    pub fn new(rest_service: &'a dyn IRestService) -> Self {
         Self { rest_service }
     }
 

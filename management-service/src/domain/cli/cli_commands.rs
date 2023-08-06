@@ -1,5 +1,6 @@
 pub fn get_cli_commands() -> Vec<(&'static str, Vec<(&'static str, &'static str)>)> {
     vec![
+        ("oversee", vec![]),
         (
             "login",
             vec![

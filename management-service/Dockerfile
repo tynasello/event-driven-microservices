@@ -1,10 +1,7 @@
 FROM rust AS builder
-WORKDIR /usr/app
-COPY Cargo.toml Cargo.lock ./
-RUN mkdir src && echo "fn main() {println!(\"if you see this, the build broke\")}" > src/main.rs
+WORKDIR /usr/src/app
+COPY bin/entrypoint.sh /bin/entrypoint.sh
+RUN chmod +x /bin/entrypoint.sh
+COPY . .
 RUN cargo build --release
-RUN rm src/*.rs
-
-COPY src ./src
-RUN cargo build --release --frozen --offline
-ENTRYPOINT target/release/management-service $CLI_COMMAND
+CMD ["/bin/entrypoint.sh"]

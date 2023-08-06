@@ -1,27 +1,13 @@
-use application::{
-    interfaces::i_rest_service::IRestService,
-    subcommand::{
-        add_inventory_subcommand::add_inventory_subcommand,
-        create_order_subcommand::create_order_subcommand,
-        get_order_status_subcommand::get_order_status_subcommand,
-        login_subcommand::login_subcommand, signup_subcommand::signup_subcommand,
-        subcommand_helper::create_subcommand,
-        update_inventory_subcommand::update_inventory_subcommand,
-    },
+use application::subcommand::{
+    add_inventory_subcommand::add_inventory_subcommand,
+    create_order_subcommand::create_order_subcommand,
+    get_order_status_subcommand::get_order_status_subcommand, login_subcommand::login_subcommand,
+    oversee_subcommand::oversee_subcommand, signup_subcommand::signup_subcommand,
+    subcommand_helper::create_subcommand, update_inventory_subcommand::update_inventory_subcommand,
 };
 use clap::App;
 use domain::cli::cli_commands::get_cli_commands;
-
-use crate::{
-    application::interfaces::i_message_broker_consumer_service::IMessageBrokerConsumerService,
-    infra::{
-        message_broker::kafka_config::KafkaConsumer,
-        service::{
-            message_broker_consumer_service::MessageBrokerConsumerService,
-            rest_service::RestService,
-        },
-    },
-};
+use infra::service::rest_service::RestService;
 
 mod application;
 mod domain;
@@ -33,10 +19,10 @@ async fn main() {
 
     let cli_subcommands = get_cli_commands();
 
-    let matches = App::new("Edrims Management Service")
+    let matches = App::new("Edms Management Service")
         .version("1.0")
         .author("tynasello")
-        .about("A CLI application to interact with and oversee the edrims system")
+        .about("A CLI application to interact with and oversee the edms system")
         .subcommands(
             cli_subcommands
                 .iter()
@@ -45,9 +31,12 @@ async fn main() {
         )
         .get_matches();
 
-    let rest_service: Box<dyn IRestService> = Box::new(RestService {});
+    let rest_service = RestService::new(None);
 
     match matches.subcommand() {
+        ("oversee", Some(_)) => {
+            oversee_subcommand();
+        }
         ("login", Some(login_matches)) => {
             login_subcommand(login_matches, &rest_service).await;
         }
@@ -70,11 +59,6 @@ async fn main() {
             println!("Invalid command. Use --help to see the available commands.");
         }
     }
-
-    // // consume kafka events
-    // let kafka_consumer = &mut KafkaConsumer::new();
-    // let message_broker_consumer_service = &mut MessageBrokerConsumerService { kafka_consumer };
-    // message_broker_consumer_service.start_consuming();
 
     return;
 }

@@ -5,11 +5,11 @@ use std::env;
 use crate::application::interfaces::i_rest_service::IRestService;
 
 pub struct LoginUsecase<'a> {
-    rest_service: &'a Box<dyn IRestService>,
+    rest_service: &'a dyn IRestService,
 }
 
 impl<'a> LoginUsecase<'a> {
-    pub fn new(rest_service: &'a Box<dyn IRestService>) -> Self {
+    pub fn new(rest_service: &'a dyn IRestService) -> Self {
         Self { rest_service }
     }
 
@@ -28,7 +28,7 @@ impl<'a> LoginUsecase<'a> {
         match response_result {
             Ok(response) => response
                 .cookies
-                .get("access_token")
+                .get("access-token")
                 .map(|cookie| cookie.to_string())
                 .ok_or("".to_string()),
             Err(error) => Err(error),

@@ -1,34 +1,36 @@
-use kafka::consumer::{Consumer, FetchOffset};
 use std::env;
 
-pub struct KafkaConsumer {
-    consumer: Consumer,
+use kafka::consumer::{Consumer, FetchOffset};
+
+use crate::application::interfaces::i_message_broker_consumer::IMessageBrokerConsumer;
+
+pub struct KafkaConsumer<'a> {
+    kafka_consumer: &'a mut Consumer,
 }
 
-impl KafkaConsumer {
-    pub fn new() -> Self {
-        Self {
-            consumer: config_kafka_consumer(),
-        }
+impl<'a> KafkaConsumer<'a> {
+    pub fn new(kafka_consumer: &'a mut Consumer) -> Self {
+        Self { kafka_consumer }
     }
+}
 
-    pub fn consume_from_kafka(&mut self) -> Vec<String> {
-        let consumer = &mut self.consumer;
+impl<'a> IMessageBrokerConsumer for KafkaConsumer<'a> {
+    fn consume_messages(&mut self) -> Result<Vec<String>, String> {
         let mut messages = vec![];
         messages.clear();
-        for message_set in consumer.poll().unwrap().iter() {
+        for message_set in self.kafka_consumer.poll().unwrap().iter() {
             for raw_message in message_set.messages() {
                 let message = std::str::from_utf8(raw_message.value).unwrap();
                 messages.push(message.to_string());
             }
-            self.consumer.consume_messageset(message_set).unwrap();
+            self.kafka_consumer.consume_messageset(message_set).unwrap();
         }
-        self.consumer.commit_consumed().unwrap();
-        return messages;
+        self.kafka_consumer.commit_consumed().unwrap();
+        return Ok(messages);
     }
 }
 
-fn config_kafka_consumer() -> Consumer {
+pub fn setup_kafka_consumer() -> Consumer {
     let hosts = get_host();
     let topic = "edms";
     let consumer_result = Consumer::from_hosts(hosts)
