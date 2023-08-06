@@ -1,71 +1,44 @@
+### Event-Driven Microservices
+
 Building an ordering system to learn more about microservices, event-driven architectures, Kubernetes, Kafka, and some languages (Go and Rust).
 
-All services are managed by Kubernetes (can use docker-compose for local development) and events are emitted and consumed via Kafka.
+All services are managed by Kubernetes and events are emitted and consumed through Kafka.
 
-To deploy services locally with Kubernetes run: `./bin/deploy-k8s-local.sh`.
-To teardown Kubernetes deployments run: `./bin/teardown-k8s-local.sh`.
-To interact with and oversee the system, run `./bin/edms.sh CLI_COMMAND`.
-Each service has it's own `./bin/up-local.sh`, and `./bin/down-local.sh` scripts for local development using docker-compose.
+- To deploy services locally with Kubernetes run: `./bin/deploy-k8s-local.sh`.
 
----
+- To teardown Kubernetes deployments run: `./bin/teardown-k8s-local.sh`.
 
-### The Services
+- To interact with and oversee the system, use the management-service CLI by running `./bin/management-cli-local.sh CLI_COMMAND`.
 
-management-service:
+- Each service has it's own `./bin/up-local.sh`, and `./bin/down-local.sh` scripts for local development using docker-compose.
 
-- CLI allowing a user to perform actions, and oversee and ~~view the flow of events in the system~~.
-- Service created with Rust and the Clap crate.
+### The System
 
-order-service:
+<img width="1311" alt="Screenshot 2023-08-06 at 4 01 22 PM" src="https://github.com/tynasello/event-driven-microservices/assets/63558019/699ff1c0-0a1b-46d3-8441-233e2e963ba6">
+<br><br>
 
-- REST API allows users to create orders.
-- Service emits ORDER_REQUESTED event when a user attempts to create an order.
-- On INVENTORY_NOT_RESERVED event, service updates order status column to CANCELLED and emits ORDER_CANCELLED event.
-- On INVENTORY_RESERVED event, service updates inventory reserved column to true for order.
-- On TRANSACTION_FAILED event, service updates order status column to CANCELLED , emits ORDER_CANCELLED event.
-- On TRANSACTION_COMPLETED, service updates order status column to APPROVED and emits ORDER_ACCEPTED event.
-- On ORDER_SHIPPED event, service updates order status column to COMPLETED and emits ORDER_COMPLETED event.
-- Service created with Java, PostgreSQL, and Spring Boot/Spring Data JPA/Maven.
+**Management Service**:
 
-payment-service:
+- CLI allowing a user to perform actions (login, create order, etc.), and oversee the flow of events in the system (**Rust** and the Clap crate).
 
-- On INVENTORY_RESERVED event, service attempts to perform a transaction (hard-coded probability).
+**Order Service**:
 
-  - If attempted transaction is successful, service emits TRANSACTION_COMPLETED event.
-  - If attempted transaction is not successful, service emits TRANSACTION_FAILED event.
+- REST API exposing endpoints to manage user orders (**Java**, **PostgreSQL**, and **Spring Boot**).
+- Service consumes various events, updates order entities, and emits events to reflect status' of orders.
 
-- Service created with Python and MySQL.
+**Payment Service**:
 
-user-service:
+- **Python** service that attempts to complete a transaction once inventory had been reserved for an order.
 
-- REST API allows users to signup and login. Authentication implemented using JWTs.
-- Upon login, an access JWT token is stored in http-only cookies. This token is used in the order service.
-- Service created with Go, PostgreSQL, JWT, and Gin/Gorm.
+**User Service**:
 
-shipping-service:
+- REST API allowing users to signup and login (**Go**, **MySQL**). Authentication implemented using JWT tokens stored in http-only cookies. These tokens are used for authentication in the order service.
 
-- On ORDER_ACCEPTED event, service emits ORDER_SHIPPED event.
-- Service created with Rust, and PostgreSQL.
+**Shipping Service**:
 
-inventory-service:
+- **Rust** service that emits a order shipped event when an order has been accepted (inventory reserved and payment successful)
 
-- REST API contains endpoint to create and update inventory items.
-- On ORDER_REQUESTED event, service validates that inventory is free to reserve.
+**Inventory Service**:
 
-  - If inventory is found, service emits INVENTORY_RESERVED event.
-  - If inventory is not found, service emits INVENTORY_NOT_RESERVED event.
-
-- On ORDER_CANCELLED event, service frees any reserved inventory for the corresponding order.
-- Service created with Go, PostgreSQL, and Gin/Gorm.
-
-### The Events
-
-- ORDER_REQUESTED
-- ORDER_CANCELLED
-- ORDER_SHIPPED
-- ORDER_COMPLETED
-- ORDER_ACCEPTED
-- INVENTORY_NOT_RESERVED
-- INVENTORY_RESERVED
-- TRANSACTION_COMPLETED
-- TRANSACTION_FAILED
+- REST API exposing endpoints to create and update inventory items.
+- Service validates that inventory is free to reserve when a order is created, and frees any reserved inventory when an order is cancelled (**Go**, **PostgreSQL**).
