@@ -30,7 +30,7 @@ class KafkaConsumer:
 
 
 def config_kafka_producer():
-    kafka_broker_address = os.environ.get("KAFKA_BOOTSTRAP_ADDRESS")
+    kafka_broker_address = os.environ.get("KAFKA_BROKER_ADDRESS")
     producer_config = {
         "bootstrap.servers": kafka_broker_address,
     }
@@ -38,7 +38,7 @@ def config_kafka_producer():
 
 
 def config_kafka_consumer():
-    kafka_broker_address = os.environ.get("KAFKA_BOOTSTRAP_ADDRESS")
+    kafka_broker_address = os.environ.get("KAFKA_BROKER_ADDRESS")
     consumer_config = {
         "bootstrap.servers": kafka_broker_address,
         "group.id": "payment-service-consumer-group",

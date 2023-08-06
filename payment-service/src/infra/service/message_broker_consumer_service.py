@@ -18,7 +18,6 @@ class MessageBrokerConsumerService:
         while True:
             message = self.kafka_consumer.consume_from_kafka()
             if message is not None:
-                # to json class
                 try:
                     self.orderEvent = OrderEvent(**json.loads(message))
                 except Exception:

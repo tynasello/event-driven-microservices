@@ -30,7 +30,7 @@ func (r InventoryRepository) Create(inventory entity.Inventory) *logic.Result[en
 func (r InventoryRepository) GetById(id int) *logic.Result[entity.Inventory] {
 	var inventoryModel model.InventoryModel
 
-	existingInventoryResult := r.Db.First(&inventoryModel, id)
+	existingInventoryResult := r.Db.Where("label = ?", id).First(&inventoryModel)
 
 	if existingInventoryResult.Error != nil {
 		return logic.FailedResult[entity.Inventory]("Failed to get inventory item")
@@ -43,7 +43,7 @@ func (r InventoryRepository) GetById(id int) *logic.Result[entity.Inventory] {
 func (r InventoryRepository) GetByLabel(label string) *logic.Result[entity.Inventory] {
 	var inventoryModel model.InventoryModel
 
-	existingInventoryResult := r.Db.Model(model.InventoryModel{Label: label}).First(&inventoryModel)
+	existingInventoryResult := r.Db.Where("label = ?", label).First(&inventoryModel)
 
 	if existingInventoryResult.Error != nil {
 		return logic.FailedResult[entity.Inventory]("Failed to get inventory item")

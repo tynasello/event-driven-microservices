@@ -17,5 +17,5 @@ spec:
         - image: tynas/payment-service
           name: payment-service
           env:
-            - name: KAFKA_BOOTSTRAP_ADDRESS
+            - name: KAFKA_BROKER_ADDRESS
               value: "kafka-service:9092"

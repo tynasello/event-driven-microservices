@@ -2,16 +2,14 @@ version: "3.0"
 
 services:
   shipping-service:
+    container_name: edms-shipping-service
     build:
       context: .
       dockerfile: ./Dockerfile.local
-    container_name: edrims-shipping-service
     environment:
       - KAFKA_BOOTSTRAP_ADDRESS=kafka:9092
-    volumes:
-      - .:/usr/app
 
 networks:
   default:
-    external:
-      name: edms_network
+    name: edms_network
+    external: true

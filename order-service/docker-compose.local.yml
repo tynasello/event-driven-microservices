@@ -4,7 +4,7 @@ services:
   # Order service (Java and Spring Boot REST API)
   order-service:
     image: maven:3.8-eclipse-temurin-19-alpine
-    container_name: edrims-order-service
+    container_name: edms-order-service
     depends_on:
       - order-service-db
     environment:
@@ -12,7 +12,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=order
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - EDMS_USER_SERVICE_URL=http://user-service:3000
+      - EDMS_USER_SERVICE_URL=http://user-service:8080
       - EDMS_KAFKA_BOOTSTRAP_ADDRESS=kafka:9092
       - SERVER_PORT=8080
     ports:
@@ -26,19 +26,19 @@ services:
   # Order service database (PostgreSQL)
   order-service-db:
     image: "postgres:13.1-alpine"
-    container_name: edrims-order-service-db
+    container_name: edms-order-service-db
     environment:
       - POSTGRES_USER=order
       - POSTGRES_PASSWORD=password
     ports:
       - "5432:5432"
     volumes:
-      - order-service-postgres-db-volume:/var/lib/postgresql/data
+      - order-service-db-volume:/var/lib/postgresql/data
 
 volumes:
-  order-service-postgres-db-volume:
+  order-service-db-volume:
 
 networks:
   default:
-    external:
-      name: edms_network
+    name: edms_network
+    external: true

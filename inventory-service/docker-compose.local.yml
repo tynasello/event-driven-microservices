@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.local
-    container_name: edrims-inventory-service
+    container_name: edms-inventory-service
     env_file:
       - .env
     ports:
@@ -20,7 +20,7 @@ services:
   # Inventory service database (PostgreSQL)
   inventory-service-db:
     image: postgres:alpine
-    container_name: edrims-inventory-service-db
+    container_name: edms-inventory-service-db
     environment:
       - POSTGRES_USER=inventory
       - POSTGRES_PASSWORD=password
@@ -28,12 +28,12 @@ services:
     ports:
       - 5436:5432
     volumes:
-      - inventory-service-postgres-db-volume:/var/lib/postgresql/data
+      - inventory-service-db-volume:/var/lib/postgresql/data
 
 volumes:
-  inventory-service-postgres-db-volume:
+  inventory-service-db-volume:
 
 networks:
   default:
-    external:
-      name: edms_network
+    name: edms_network
+    external: true

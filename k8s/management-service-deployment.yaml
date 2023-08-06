@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: management-service
+  namespace: edms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: management-service
+  template:
+    metadata:
+      labels:
+        app: management-service
+    spec:
+      containers:
+        - image: tynas/management-service:latest
+          name: management-service
+          env:
+            - name: KAFKA_BOOTSTRAP_ADDRESS
+              value: kafka-service:9092
+            - name: USER_SERVICE_URI
+              value: http://user-service-service:8080
+            - name: ORDER_SERVICE_URI
+              value: http://order-service-service:8080
+            - name: INVENTORY_SERVICE_URI
+              value: http://inventory-service-service:8080

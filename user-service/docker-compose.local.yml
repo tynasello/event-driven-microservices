@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # User Service (Go and Gin REST API)
   user-service:
-    container_name: edrims-user-service
+    container_name: edms-user-service
     build:
       context: .
       dockerfile: ./Dockerfile.local
@@ -20,7 +20,7 @@ services:
 
   # User service database (MySQL)
   user-service-db:
-    container_name: edrims-user-service-db
+    container_name: edms-user-service-db
     image: mysql:5.7
     environment:
       - MYSQL_DATABASE=userdb
@@ -30,7 +30,7 @@ services:
     ports:
       - 5434:3306
     volumes:
-      - user-service-postgres-db-volume:/var/lib/mysql
+      - user-service-db-volume:/var/lib/mysql
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
       start_period: 5s
@@ -40,7 +40,7 @@ services:
 
   # User service test database (MySQL)
   user-service-test-db:
-    container_name: edrims-user-service-test-db
+    container_name: edms-user-service-test-db
     image: mysql:5.7
     environment:
       - MYSQL_DATABASE=userdb
@@ -57,9 +57,9 @@ services:
       retries: 55
 
 volumes:
-  user-service-postgres-db-volume:
+  user-service-db-volume:
 
 networks:
   default:
-    external:
-      name: edms_network
+    name: edms_network
+    external: true

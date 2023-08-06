@@ -2,6 +2,11 @@ Building an ordering system to learn more about microservices, event-driven arch
 
 All services are managed by Kubernetes (can use docker-compose for local development) and events are emitted and consumed via Kafka.
 
+To deploy services locally with Kubernetes run: `./bin/deploy-k8s-local.sh`.
+To teardown Kubernetes deployments run: `./bin/teardown-k8s-local.sh`.
+To interact with and oversee the system, run `./bin/edms.sh CLI_COMMAND`.
+Each service has it's own `./bin/up-local.sh`, and `./bin/down-local.sh` scripts for local development using docker-compose.
+
 ---
 
 ### The Services

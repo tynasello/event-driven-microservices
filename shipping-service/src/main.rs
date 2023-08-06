@@ -21,6 +21,7 @@ fn main() {
     dotenv().ok();
 
     let kafka_producer = &mut KafkaProducer::new();
+
     let kafka_consumer = &mut KafkaConsumer::new();
 
     let message_broker_producer_service: &mut dyn IMessageBrokerProducerService =

@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3.8"
 
 services:
   zookeeper:
@@ -17,9 +17,9 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CREATE_TOPICS: "edms:1:1"
+      KAFKA_CREATE_TOPICS: edms:1:1
 
 networks:
   default:
-    external:
-      name: edms_network
+    name: edms_network
+    external: true
